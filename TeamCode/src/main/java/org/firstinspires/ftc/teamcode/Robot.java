@@ -32,6 +32,11 @@ public class Robot {
 
     // initialize (main function)
     public void init() {
+        // FTC Dashboard
+        System.out.println("Connect to the Control Hub's WiFi and go to the following URL to access FTC Dashboard:" +
+                "\n" +
+                "192.168.43.1:8080/dash");
+
         // clear telemetry screen
         myOpMode.telemetry.clearAll();
         myOpMode.telemetry.addData("> (INFO) - ", "Telemetry Initialized");
