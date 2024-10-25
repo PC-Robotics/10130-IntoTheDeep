@@ -81,6 +81,7 @@ public class ServoPositionLocator extends LinearOpMode {
                     position -= LARGE_INCREMENT;
                 }
             }
+            // Allow Left to be pressed again
             else
             {
                 leftPressed = false;
