@@ -23,27 +23,32 @@ public class Robot {
     public Servo right = null;
     public Servo left = null;
     public Servo claw = null;
+    public Servo bucket = null;
     public IMU imu = null;
 
     // Define a constructor that allows the OpMode to pass a reference to itself.
-    public Robot (LinearOpMode opmode) {
+    public Robot(LinearOpMode opmode) {
         myOpMode = opmode;
     }
 
     // initialize (main function)
     public void init() {
         // FTC Dashboard
-        System.out.println("Connect to the Control Hub's WiFi and go to the following URL to access FTC Dashboard:" +
-                "\n" +
-                "192.168.43.1:8080/dash");
+        System.out.println(
+                "Connect to the Control Hub's WiFi and go to the following URL to access FTC Dashboard:" +
+                        "\n" +
+                        "192.168.43.1:8080/dash"
+        );
 
         // clear telemetry screen
         myOpMode.telemetry.clearAll();
         myOpMode.telemetry.addData("> (INFO) - ", "Telemetry Initialized");
         myOpMode.telemetry.update();
 
+        // init
         initMotors();
         initSensors();
+
     }
 
     private void initMotors() {
@@ -65,6 +70,7 @@ public class Robot {
          *      Motors -
          *          0: linearSlide
          */
+
         frontRight = motorInit("frontRight", DcMotor.Direction.FORWARD, DcMotor.ZeroPowerBehavior.BRAKE);
         frontLeft = motorInit("frontLeft", DcMotor.Direction.FORWARD, DcMotor.ZeroPowerBehavior.BRAKE);
         backRight = motorInit("backRight", DcMotor.Direction.FORWARD, DcMotor.ZeroPowerBehavior.BRAKE);
@@ -75,12 +81,37 @@ public class Robot {
         right = servoInit("right", Servo.Direction.FORWARD);
         left = servoInit("left", Servo.Direction.FORWARD);
         claw = servoInit("claw", Servo.Direction.FORWARD);
+        bucket = servoInit("bucket", Servo.Direction.FORWARD);
 
         // telemetry
         myOpMode.telemetry.addData("> (INFO) - ", "Motors Initialized");
         myOpMode.telemetry.update();
     }
 
+    private void initSensors() {
+        // Initialize the IMU
+        imu = myOpMode.hardwareMap.get(IMU.class, "imu");
+
+        // telemetry
+        myOpMode.telemetry.addData("> (INFO) - ", "Sensors Initialized");
+        myOpMode.telemetry.update();
+    }
+
+
+    // get an object containing euler angles
+    public YawPitchRollAngles getEulerAngles() {
+        return imu.getRobotYawPitchRollAngles();
+    }
+
+    // get the heading of the robot in radians
+    public double getHeading() {
+        return imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS);
+    }
+
+
+    // HELPERS
+
+    // INIT HELPERS
     private DcMotor motorInit(String motorName, DcMotor.Direction direction, DcMotor.ZeroPowerBehavior zeroPowerBehavior) {
         DcMotor motor = myOpMode.hardwareMap.get(DcMotor.class, motorName);
         motor.setDirection(direction);
@@ -100,22 +131,14 @@ public class Robot {
         return CRservo;
     }
 
-    private void initSensors() {
-        // Initialize the IMU
-        imu = myOpMode.hardwareMap.get(IMU.class,"imu");
+    // MOVEMENT
 
-        // telemetry
-        myOpMode.telemetry.addData("> (INFO) - ", "Sensors Initialized");
-        myOpMode.telemetry.update();
+    public void setArmPosition(double position) {
+        right.setPosition(position);
+        left.setPosition(position);
     }
 
-    // get an object containing euler angles
-    public YawPitchRollAngles getEulerAngles() {
-        return imu.getRobotYawPitchRollAngles();
-    }
-
-    // get the heading of the robot in radians
-    public double getHeading() {
-        return imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS);
+    public double  getArmPosition() {
+        return (right.getPosition() + left.getPosition()) / 2;
     }
 }

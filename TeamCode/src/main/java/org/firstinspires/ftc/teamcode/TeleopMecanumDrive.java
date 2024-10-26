@@ -1,10 +1,12 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import static org.firstinspires.ftc.teamcode.Utility.applyDeadzone;
 import static org.firstinspires.ftc.teamcode.Utility.normalizePowers;
 
+@TeleOp(name="Mecanum Drive", group="Linear OpMode")
 public class TeleopMecanumDrive extends LinearOpMode {
     private static final double DEADZONE_THRESHOLD = 0.1;
 
@@ -20,7 +22,7 @@ public class TeleopMecanumDrive extends LinearOpMode {
 
         while (opModeIsActive()) {
             readSensors();
-            lucienDrive(straight, turn, strafe);
+            mecanumDrive(straight, turn, strafe);
             updateTelemetryData();
         }
     }
@@ -32,7 +34,7 @@ public class TeleopMecanumDrive extends LinearOpMode {
         heading = robot.getHeading(); // in radians
     }
 
-    private void lucienDrive(double straight, double turn, double strafe) {
+    private void mecanumDrive(double straight, double turn, double strafe) {
         // calculate powers
         powers[0] = straight + turn + strafe; // front left power
         powers[1] = straight + turn - strafe; // back left power
