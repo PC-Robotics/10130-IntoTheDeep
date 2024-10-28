@@ -1,11 +1,12 @@
 package org.firstinspires.ftc.teamcode;
 
-import static androidx.core.math.MathUtils.clamp;
 import static org.firstinspires.ftc.teamcode.Utility.applyDeadzone;
+import static org.firstinspires.ftc.teamcode.Utility.clamp;
 import static org.firstinspires.ftc.teamcode.Utility.normalizePowers;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Gamepad;
 
 /**
@@ -24,8 +25,11 @@ import com.qualcomm.robotcore.hardware.Gamepad;
 public class FirstCompetitionDrive extends LinearOpMode {
     private int linearSlideIndex = 0;
     private int wristIndex = 0;
-    private int bucketIndex = 0;
-    private int clawIndex = 0;
+
+    private boolean dpadLeftPressed = false;
+    private boolean dpadRightPressed = false;
+    private boolean dpadUpPressed = false;
+    private boolean dpadDownPressed = false;
 
     Robot robot = new Robot(this);
 
@@ -37,19 +41,15 @@ public class FirstCompetitionDrive extends LinearOpMode {
     private double slidePosition;
     private double wristPosition, armPosition, clawPosition;
 
-    private Gamepad currentGamepad = new Gamepad();
-    private Gamepad previousGamepad = new Gamepad();
-
     public void runOpMode() {
+        System.out.print("hi");
         robot.init();
         waitForStart();
         robot.imu.resetYaw();
 
-        initPositions();
+        initOpMode();
 
         while (opModeIsActive()) {
-            previousGamepad.copy(currentGamepad);
-
             readSensors();
             mecanumDrive(straight, turn, strafe);
             linearSlideControl();
@@ -59,16 +59,23 @@ public class FirstCompetitionDrive extends LinearOpMode {
             intakeControl();
             bucketControl();
             updateTelemetryData();
-
-            currentGamepad.copy(gamepad1);
         }
     }
 
-    private void initPositions() {
+    private void initOpMode() {
+        robot.linearSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        robot.linearSlide.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        robot.linearSlide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        robot.linearSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
         robot.setArmPosition(Settings.armInPosition);
         robot.wrist.setPosition(Settings.wristDrivingPosition);
         robot.bucket.setPosition(Settings.bucketPickupPosition);
         robot.claw.setPosition(Settings.clawOpenPosition);
+
+        robot.linearSlide.setTargetPosition(Settings.linearSlideStartingPosition);
+        robot.linearSlide.setPower(1.0);
+
     }
 
     private void readSensors() {
@@ -99,43 +106,68 @@ public class FirstCompetitionDrive extends LinearOpMode {
     }
 
     private void linearSlideControl() {
-        if (currentGamepad.y && !previousGamepad.y) {
-            linearSlideIndex += 1;
-        } else if (currentGamepad.a && !previousGamepad.a) {
-            linearSlideIndex -= 1;
+        if (gamepad1.dpad_left) {
+            if (!dpadLeftPressed) {
+                dpadLeftPressed = true;
+                linearSlideIndex += 1;
+            }
+        } else {
+            dpadLeftPressed = false;
+        }
+
+        if (gamepad1.dpad_right) {
+            if (!dpadRightPressed) {
+                dpadRightPressed = false;
+                linearSlideIndex -= 1;
+            }
+        } else {
+            dpadRightPressed = false;
         }
 
         linearSlideIndex = clamp(linearSlideIndex, 0, 2);
+
+        robot.linearSlide.setTargetPosition(Settings.linearSlidePositions[linearSlideIndex]);
+        robot.linearSlide.setPower(0.66);
     }
 
     private void clawControl() {
-        if (currentGamepad.circle && !previousGamepad.x) {
+        if (gamepad1.x) {
             robot.claw.setPosition(Settings.clawClosedPosition);
-        } else if (currentGamepad.circle && !previousGamepad.circle) {
+        } else if (gamepad1.circle) {
             robot.claw.setPosition(Settings.clawOpenPosition);
         }
     }
 
     private void armControl() {
-        double newArmPosition = Settings.armInPosition;
+        double newArmPosition = robot.getArmPosition();
         
         if (rightTrigger != 0) {
-            newArmPosition = robot.getArmPosition() + leftTrigger;
+            newArmPosition -= (rightTrigger / 300);
         } else if (leftTrigger != 0) {
-            newArmPosition = robot.getArmPosition() + leftTrigger;
+            newArmPosition += (leftTrigger / 300);
         }
         
-        newArmPosition = clamp(newArmPosition, Settings.armInPosition, Settings.armOutPosition);
+        newArmPosition = clamp(newArmPosition, Settings.armOutPosition, Settings.armInPosition);
         robot.setArmPosition(newArmPosition);
     }
 
     private void wristControl() {
-        if (currentGamepad.dpad_up && !previousGamepad.dpad_up) {
-            wristIndex += 1;
+        if (gamepad1.dpad_up) {
+            if (!dpadUpPressed) {
+                dpadUpPressed = true;
+                wristIndex += 1;
+            }
+        } else {
+            dpadUpPressed = false;
         }
 
-        if (currentGamepad.dpad_down && !previousGamepad.dpad_down) {
-            wristIndex -= 1;
+        if (gamepad1.dpad_down) {
+            if (!dpadDownPressed) {
+                dpadDownPressed = true;
+                wristIndex -= 1;
+            }
+        } else {
+            dpadDownPressed = false;
         }
 
         wristIndex = clamp(wristIndex, 0, 2);
@@ -144,17 +176,19 @@ public class FirstCompetitionDrive extends LinearOpMode {
     }
 
     private void intakeControl() {
-        if (currentGamepad.right_bumper) {
-            robot.intake.setPower(1.0);
-        } else if (currentGamepad.left_bumper) {
-            robot.intake.setPower(-1.0);
+        if (gamepad1.right_bumper) {
+            robot.intake.setPower(.3);
+        } else if (gamepad1.left_bumper) {
+            robot.intake.setPower(-.3);
+        } else {
+            robot.intake.setPower(0);
         }
     }
 
     private void bucketControl() {
-        if (currentGamepad.square && !previousGamepad.square) {
+        if (gamepad1.square) {
             robot.bucket.setPosition(Settings.bucketPickupPosition);
-        } else if (currentGamepad.triangle && !previousGamepad.triangle) {
+        } else if (gamepad1.triangle) {
             robot.bucket.setPosition(Settings.bucketReleasePosition);
         }
     }
@@ -167,7 +201,10 @@ public class FirstCompetitionDrive extends LinearOpMode {
                 .addData("Back Left Power", powers[1])
                 .addData("Front Right Power", powers[2])
                 .addData("Back Right Power", powers[3])
-                .addData("Heading", Math.toDegrees(heading) + 180);
+                .addData("Heading", Math.toDegrees(heading) + 180)
+                .addData("slide", linearSlideIndex)
+                .addData("wrist", wristIndex);
+
         telemetry.update();
     }
 }

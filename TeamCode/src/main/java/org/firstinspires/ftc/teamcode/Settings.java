@@ -8,13 +8,13 @@ public final class Settings {
     }
     public static final double DEADZONE_THRESHOLD = 0.1;
 
-    public static final double armInPosition = 0.188;
-    public static final double armOutPosition = 0.658;
+    public static final double armInPosition = 0.658;
+    public static final double armOutPosition = 0.188;
 
-    public static final double linearSlideStartingPosition = 0;
-    public static final double linearSlideFirstBucketPosition = 0.5;
-    public static final double linearSlideSecondBucketPosition = 1;
-    public static final double[] linearSlidePositions = {
+    public static final int linearSlideStartingPosition = 0;
+    public static final int linearSlideFirstBucketPosition = 2500;
+    public static final int linearSlideSecondBucketPosition = 4250;
+    public static final int[] linearSlidePositions = {
             linearSlideStartingPosition,
             linearSlideFirstBucketPosition,
             linearSlideSecondBucketPosition
@@ -32,6 +32,8 @@ public final class Settings {
             wristReleasePosition
     };
 
-    public static final double bucketPickupPosition = 0.509;
+    public static final double bucketPickupPosition = 0.514;
     public static final double bucketReleasePosition = 0.48;
+
+    public static final double motorCPR = 1;
 }
