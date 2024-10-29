@@ -42,7 +42,6 @@ public class FirstCompetitionDrive extends LinearOpMode {
     private double wristPosition, armPosition, clawPosition;
 
     public void runOpMode() {
-        System.out.print("hi");
         robot.init();
         waitForStart();
         robot.imu.resetYaw();
@@ -68,12 +67,12 @@ public class FirstCompetitionDrive extends LinearOpMode {
         robot.linearSlide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         robot.linearSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
-        robot.setArmPosition(Settings.armInPosition);
-        robot.wrist.setPosition(Settings.wristDrivingPosition);
-        robot.bucket.setPosition(Settings.bucketPickupPosition);
-        robot.claw.setPosition(Settings.clawOpenPosition);
+        robot.setArmPosition(Settings.ARM_IN_POSITION);
+        robot.wrist.setPosition(Settings.WRIST_DRIVING_POSITION);
+        robot.bucket.setPosition(Settings.BUCKET_PICKUP_POSITION);
+        robot.claw.setPosition(Settings.CLAW_OPEN_POSITION);
 
-        robot.linearSlide.setTargetPosition(Settings.linearSlideStartingPosition);
+        robot.linearSlide.setTargetPosition(Settings.LINEAR_SLIDE_STARTING_POSITION);
         robot.linearSlide.setPower(1.0);
 
     }
@@ -126,15 +125,15 @@ public class FirstCompetitionDrive extends LinearOpMode {
 
         linearSlideIndex = clamp(linearSlideIndex, 0, 2);
 
-        robot.linearSlide.setTargetPosition(Settings.linearSlidePositions[linearSlideIndex]);
+        robot.linearSlide.setTargetPosition(Settings.LINEAR_SLIDE_POSITIONS[linearSlideIndex]);
         robot.linearSlide.setPower(0.66);
     }
 
     private void clawControl() {
         if (gamepad1.x) {
-            robot.claw.setPosition(Settings.clawClosedPosition);
+            robot.claw.setPosition(Settings.CLAW_CLOSED_POSITION);
         } else if (gamepad1.circle) {
-            robot.claw.setPosition(Settings.clawOpenPosition);
+            robot.claw.setPosition(Settings.CLAW_OPEN_POSITION);
         }
     }
 
@@ -147,7 +146,7 @@ public class FirstCompetitionDrive extends LinearOpMode {
             newArmPosition += (leftTrigger / 300);
         }
         
-        newArmPosition = clamp(newArmPosition, Settings.armOutPosition, Settings.armInPosition);
+        newArmPosition = clamp(newArmPosition, Settings.ARM_OUT_POSITION, Settings.ARM_IN_POSITION);
         robot.setArmPosition(newArmPosition);
     }
 
@@ -172,7 +171,7 @@ public class FirstCompetitionDrive extends LinearOpMode {
 
         wristIndex = clamp(wristIndex, 0, 2);
 
-        robot.wrist.setPosition(Settings.wristPositions[wristIndex]);
+        robot.wrist.setPosition(Settings.WRIST_POSITIONS[wristIndex]);
     }
 
     private void intakeControl() {
@@ -187,9 +186,9 @@ public class FirstCompetitionDrive extends LinearOpMode {
 
     private void bucketControl() {
         if (gamepad1.square) {
-            robot.bucket.setPosition(Settings.bucketPickupPosition);
+            robot.bucket.setPosition(Settings.BUCKET_PICKUP_POSITION);
         } else if (gamepad1.triangle) {
-            robot.bucket.setPosition(Settings.bucketReleasePosition);
+            robot.bucket.setPosition(Settings.BUCKET_RELEASE_POSITION);
         }
     }
 

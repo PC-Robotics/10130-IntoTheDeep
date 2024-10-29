@@ -8,32 +8,32 @@ public final class Settings {
     }
     public static final double DEADZONE_THRESHOLD = 0.1;
 
-    public static final double armInPosition = 0.658;
-    public static final double armOutPosition = 0.188;
+    public static final double ARM_IN_POSITION = 0.658;
+    public static final double ARM_OUT_POSITION = 0.188;
 
-    public static final int linearSlideStartingPosition = 0;
-    public static final int linearSlideFirstBucketPosition = 2500;
-    public static final int linearSlideSecondBucketPosition = 4250;
-    public static final int[] linearSlidePositions = {
-            linearSlideStartingPosition,
-            linearSlideFirstBucketPosition,
-            linearSlideSecondBucketPosition
+    public static final int LINEAR_SLIDE_STARTING_POSITION = 0;
+    public static final int LINEAR_SLIDE_FIRST_BUCKET_POSITION = 2500;
+    public static final int LINEAR_SLIDE_SECOND_BUCKET_POSITION = 4250;
+    public static final int[] LINEAR_SLIDE_POSITIONS = {
+            LINEAR_SLIDE_STARTING_POSITION,
+            LINEAR_SLIDE_FIRST_BUCKET_POSITION,
+            LINEAR_SLIDE_SECOND_BUCKET_POSITION
     };
 
-    public static final double clawOpenPosition = .5;
-    public static final double clawClosedPosition = .68;
+    public static final double CLAW_OPEN_POSITION = .5;
+    public static final double CLAW_CLOSED_POSITION = .68;
 
-    public static final double wristIntakePosition = 0.8;
-    public static final double wristReleasePosition = 0.21;
-    public static final double wristDrivingPosition = 0.38;
-    public static final double[] wristPositions = {
-            wristIntakePosition,
-            wristDrivingPosition,
-            wristReleasePosition
+    public static final double WRIST_INTAKE_POSITION = 0.8;
+    public static final double WRIST_RELEASE_POSITION = 0.21;
+    public static final double WRIST_DRIVING_POSITION = 0.38;
+    public static final double[] WRIST_POSITIONS = {
+            WRIST_INTAKE_POSITION,
+            WRIST_DRIVING_POSITION,
+            WRIST_RELEASE_POSITION
     };
 
-    public static final double bucketPickupPosition = 0.514;
-    public static final double bucketReleasePosition = 0.48;
+    public static final double BUCKET_PICKUP_POSITION = 0.514;
+    public static final double BUCKET_RELEASE_POSITION = 0.48;
 
-    public static final double motorCPR = 1;
+    public static final double MOTOR_CPR = 1;
 }
