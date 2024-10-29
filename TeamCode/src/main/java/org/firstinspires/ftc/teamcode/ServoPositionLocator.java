@@ -56,7 +56,7 @@ public class ServoPositionLocator extends LinearOpMode {
     private boolean rightPressed = false;
 
     @Override
-    public void runOpMode() throws InterruptedException {
+    public void runOpMode() {
         // Connect to the servo
         // Change device name in variable definitions
         // Can move to an FTC Dashboard Config constants file to be able to change there
