@@ -123,7 +123,7 @@ public class FirstCompetitionDrive extends LinearOpMode {
             dpadRightPressed = false;
         }
 
-        linearSlideIndex = clamp(linearSlideIndex, 0, 2);
+        linearSlideIndex =  clamp(linearSlideIndex, 0, 2);
 
         robot.linearSlide.setTargetPosition(Settings.LINEAR_SLIDE_POSITIONS[linearSlideIndex]);
         robot.linearSlide.setPower(0.66);
