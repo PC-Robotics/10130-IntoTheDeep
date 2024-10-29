@@ -134,6 +134,24 @@ public class Robot {
 
     // MOVEMENT
 
+    public void setMotorPowers(double[] powers) {
+        frontRight.setPower(powers[0]);
+        frontLeft.setPower(powers[1]);
+        backRight.setPower(powers[2]);
+        backLeft.setPower(powers[3]);
+    }
+
+    public void setMotorPowers(double power) {
+        frontRight.setPower(power);
+        frontLeft.setPower(power);
+        backRight.setPower(power);
+        backLeft.setPower(power);
+    }
+
+    public void stopMotors() {
+        setMotorPowers(0);
+    }
+
     public void setArmPosition(double position) {
         right.setPosition(position);
         left.setPosition(position);

@@ -7,7 +7,6 @@ import static org.firstinspires.ftc.teamcode.Utility.normalizePowers;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.Gamepad;
 
 /**
  * bumpers (hold) - intake
@@ -20,9 +19,9 @@ import com.qualcomm.robotcore.hardware.Gamepad;
  * x - claw open
  * dpad left right - linearslide movement traversal
  */
-@TeleOp(name="First Competition Code", group="Linear OpMode")
+@TeleOp(name="Main Teleop Program", group="Linear OpMode")
 // TODO - figure out subsystems and seperate drive.
-public class FirstCompetitionDrive extends LinearOpMode {
+public class MainTeleop extends LinearOpMode {
     private int linearSlideIndex = 0;
     private int wristIndex = 0;
 
@@ -98,10 +97,7 @@ public class FirstCompetitionDrive extends LinearOpMode {
         powers = normalizePowers(powers);
 
         // set powers to motors
-        robot.frontLeft.setPower(powers[0]);
-        robot.backLeft.setPower(powers[1]);
-        robot.frontRight.setPower(powers[2]);
-        robot.backRight.setPower(powers[3]);
+        robot.setMotorPowers(powers);
     }
 
     private void linearSlideControl() {
