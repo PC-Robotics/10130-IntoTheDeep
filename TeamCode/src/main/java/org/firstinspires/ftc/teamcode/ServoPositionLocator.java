@@ -4,105 +4,122 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.Servo;
+import java.text.DecimalFormat;
 
 @TeleOp(name="Servo Location Finder",group="Testing")
 
 public class ServoPositionLocator extends LinearOpMode {
 
-    static final String TESTED_SERVO = "claw";
+    //
+    //
+    //
+    //
+    // NOTE - USER EDITABLE VARIABLES
 
-    static final double SMALL_INCREEMENT = 0.01;
+    // Change this to the name of the servo on the hardware map
+    static final String SERVO_NAME = "claw";
+
+    // INCREMENTS - Calculated as a percentage of the servo's total range
+    // On a 5-turn servo, 0.01 will move the servo more than on a 1-turn servo
+
+    // Small increment for fine tuning
+    static final double SMALL_INCREMENT = 0.01;
+
+    // Large increment for large adjustments
     static final double LARGE_INCREMENT = 0.1;
+
+    // The maximum and minimum positions of YOUR INTENDED RANGE OF THE SERVO
     static final double MAX_POS = 1.0;
     static final double MIN_POS = 0.0;
 
-    static final double MIDDLE_POS = (MAX_POS + MIN_POS)/2;
+    // This is the position the servo will move to when the program starts
+    // By default, it is the middle of the range
+    // You can edit it to a specific position if you want
+    static final double STARTING_POS = (MAX_POS + MIN_POS) / 2;
 
-    private double position = MIDDLE_POS;
+    // NOTE - END OF USER EDITABLE VARIABLES
+    //
+    //
+    //
+    //
 
-    private Servo servo = null;
+    // pretty printing stuff
+    DecimalFormat df = new DecimalFormat("#.####");
 
+    private double position = STARTING_POS;
 
     // These booleans are used to ensure that each button press is only counted once
     // Cannot hold the button for these operations
     private boolean xPressed = false;
     private boolean bPressed = false;
-    private boolean rightPressed = false;
     private boolean leftPressed = false;
-
+    private boolean rightPressed = false;
 
     @Override
     public void runOpMode() throws InterruptedException {
         // Connect to the servo
         // Change device name in variable definitions
         // Can move to an FTC Dashboard Config constants file to be able to change there
-        servo = hardwareMap.get(Servo.class, TESTED_SERVO);
+        Servo servo = hardwareMap.get(Servo.class, SERVO_NAME);
 
-        telemetry.addData(">", "Press Start to test "+TESTED_SERVO );
+        telemetry.addData(">", "Press Start to test "+ SERVO_NAME);
+        telemetry.addData(">", "Use x and b to make small adjustments");
+        telemetry.addData(">", "Use dpad left and right to make large adjustments");
         telemetry.update();
         waitForStart();
 
-        while(opModeIsActive())
-        {
-
+        while(opModeIsActive()) {
             // Use x and b on Gamepad 1 to make smaller servo adjustments
-            if(gamepad1.x)
-            {
-                if(!xPressed)
-                {
+
+            // x moves the servo to the left
+            if(gamepad1.x) {
+                if(!xPressed) {
                     xPressed = true;
-                    position -= SMALL_INCREEMENT;
+                    position -= SMALL_INCREMENT;
                 }
-            }
-            else
-            {
+            } else {
                 xPressed = false;
             }
 
-            if(gamepad1.b)
-            {
-                if(!bPressed)
-                {
+            // b moves the servo to the right
+            if(gamepad1.b) {
+                if(!bPressed) {
                     bPressed = true;
-                    position += SMALL_INCREEMENT;
+                    position += SMALL_INCREMENT;
                 }
-            }
-            else
-            {
+            } else {
                 bPressed = false;
             }
 
-            // Use Left and Right on Gamepad 1's d-pad for large adjustments
-            if(gamepad1.dpad_left)
-            {
-                if(!leftPressed)
-                {
+            // Use Left and Right on d-pad for large adjustments
+
+            // left moves the servo to the left
+            if(gamepad1.dpad_left) {
+                if(!leftPressed) {
                     leftPressed = true;
                     position -= LARGE_INCREMENT;
                 }
-            }
-            // Allow Left to be pressed again
-            else
-            {
+            } else {
                 leftPressed = false;
             }
 
-            if(gamepad1.dpad_right)
-            {
-                if(!rightPressed)
-                {
+            // right moves the servo to the right
+            if(gamepad1.dpad_right) {
+                if(!rightPressed) {
                     rightPressed = true;
                     position += LARGE_INCREMENT;
                 }
-            }
-            else
-            {
+            } else {
                 rightPressed = false;
             }
 
+            // Clamp the position to the range of the servo
+            position = Utility.clamp(position, MIN_POS, MAX_POS);
+
+            // Set the servo to the new position
             servo.setPosition(position);
 
-            telemetry.addData("Servo Position", "%5.6f", position);
+            telemetry.addData("Servo Position", df.format(position));
             telemetry.addData(">", "Press Stop to end test." );
             telemetry.update();
 
