@@ -22,9 +22,6 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 @TeleOp(name="Main Teleop Program", group="Linear OpMode")
 // TODO - figure out subsystems and seperate drive.
 public class MainTeleop extends LinearOpMode {
-    private int linearSlideIndex = 0;
-    private int wristIndex = 0;
-
     private boolean dpadLeftPressed = false;
     private boolean dpadRightPressed = false;
     private boolean dpadUpPressed = false;
@@ -36,9 +33,6 @@ public class MainTeleop extends LinearOpMode {
     private double straight, turn, strafe, heading;
 
     private double leftTrigger, rightTrigger;
-
-    private double slidePosition;
-    private double wristPosition, armPosition, clawPosition;
 
     public void runOpMode() {
         robot.init();
@@ -104,7 +98,7 @@ public class MainTeleop extends LinearOpMode {
         if (gamepad1.dpad_left) {
             if (!dpadLeftPressed) {
                 dpadLeftPressed = true;
-                linearSlideIndex += 1;
+                robot.increaseLinearSlidePosition(Settings.LINEAR_SLIDE_POWER);
             }
         } else {
             dpadLeftPressed = false;
@@ -113,16 +107,11 @@ public class MainTeleop extends LinearOpMode {
         if (gamepad1.dpad_right) {
             if (!dpadRightPressed) {
                 dpadRightPressed = false;
-                linearSlideIndex -= 1;
+                robot.decreaseLinearSlidePosition(Settings.LINEAR_SLIDE_POWER);
             }
         } else {
             dpadRightPressed = false;
         }
-
-        linearSlideIndex =  clamp(linearSlideIndex, 0, 2);
-
-        robot.linearSlide.setTargetPosition(Settings.LINEAR_SLIDE_POSITIONS[linearSlideIndex]);
-        robot.linearSlide.setPower(0.66);
     }
 
     private void clawControl() {
@@ -150,7 +139,7 @@ public class MainTeleop extends LinearOpMode {
         if (gamepad1.dpad_up) {
             if (!dpadUpPressed) {
                 dpadUpPressed = true;
-                wristIndex += 1;
+                robot.increaseWristPosition();
             }
         } else {
             dpadUpPressed = false;
@@ -159,22 +148,18 @@ public class MainTeleop extends LinearOpMode {
         if (gamepad1.dpad_down) {
             if (!dpadDownPressed) {
                 dpadDownPressed = true;
-                wristIndex -= 1;
+                robot.decreaseWristPosition();
             }
         } else {
             dpadDownPressed = false;
         }
-
-        wristIndex = clamp(wristIndex, 0, 2);
-
-        robot.wrist.setPosition(Settings.WRIST_POSITIONS[wristIndex]);
     }
 
     private void intakeControl() {
         if (gamepad1.right_bumper) {
-            robot.intake.setPower(.3);
+            robot.intake.setPower(Settings.INTAKE_POWER);
         } else if (gamepad1.left_bumper) {
-            robot.intake.setPower(-.3);
+            robot.intake.setPower(-Settings.INTAKE_POWER);
         } else {
             robot.intake.setPower(0);
         }
@@ -197,8 +182,8 @@ public class MainTeleop extends LinearOpMode {
                 .addData("Front Right Power", powers[2])
                 .addData("Back Right Power", powers[3])
                 .addData("Heading", Math.toDegrees(heading) + 180)
-                .addData("slide", linearSlideIndex)
-                .addData("wrist", wristIndex);
+                .addData("slide", robot.getLinearSlideIndex())
+                .addData("wrist", robot.getWristIndex());
 
         telemetry.update();
     }

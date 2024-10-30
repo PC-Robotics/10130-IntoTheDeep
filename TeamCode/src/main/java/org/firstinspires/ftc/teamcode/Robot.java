@@ -157,7 +157,50 @@ public class Robot {
         left.setPosition(position);
     }
 
-    public double  getArmPosition() {
+    public double getArmPosition() {
         return (right.getPosition() + left.getPosition()) / 2;
+    }
+
+    private int linearSlideIndex = 0;
+
+    public void increaseLinearSlidePosition(double power) {
+        if (linearSlideIndex < 2) {
+            linearSlideIndex++;
+            linearSlide.setTargetPosition(Settings.LINEAR_SLIDE_POSITIONS[linearSlideIndex]);
+            linearSlide.setPower(power);
+        }
+    }
+
+    public void decreaseLinearSlidePosition(double power) {
+        if (linearSlideIndex > 2) {
+            linearSlideIndex--;
+            linearSlide.setTargetPosition(Settings.LINEAR_SLIDE_POSITIONS[linearSlideIndex]);
+            linearSlide.setPower(power);
+        }
+    }
+
+    public int getLinearSlideIndex() {
+        return linearSlideIndex;
+    }
+
+
+    private int wristIndex = 0;
+
+    public void increaseWristPosition() {
+        if (wristIndex < 2) {
+            wristIndex++;
+            wrist.setPosition(Settings.WRIST_POSITIONS[wristIndex]);
+        }
+    }
+
+    public void decreaseWristPosition() {
+        if (wristIndex > 2) {
+            wristIndex--;
+            wrist.setPosition(Settings.WRIST_POSITIONS[wristIndex]);
+        }
+    }
+
+    public int getWristIndex() {
+        return wristIndex;
     }
 }
