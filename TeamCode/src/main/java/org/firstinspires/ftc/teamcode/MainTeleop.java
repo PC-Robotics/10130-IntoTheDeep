@@ -34,6 +34,9 @@ public class MainTeleop extends LinearOpMode {
 
     private double leftTrigger, rightTrigger;
 
+    ControllerToggles controllerToggles1 = new ControllerToggles(gamepad1);
+    ControllerToggles controllerToggles2 = new ControllerToggles(gamepad2);
+
     public void runOpMode() {
         robot.init();
         waitForStart();
@@ -51,6 +54,9 @@ public class MainTeleop extends LinearOpMode {
             intakeControl();
             bucketControl();
             updateTelemetryData();
+
+            controllerToggles1.update(gamepad1);
+            controllerToggles2.update(gamepad2);
         }
     }
 
@@ -66,8 +72,7 @@ public class MainTeleop extends LinearOpMode {
         robot.claw.setPosition(Settings.CLAW_OPEN_POSITION);
 
         robot.linearSlide.setTargetPosition(Settings.LINEAR_SLIDE_STARTING_POSITION);
-        robot.linearSlide.setPower(1.0);
-
+        robot.linearSlide.setPower(Settings.LINEAR_SLIDE_POWER);
     }
 
     private void readSensors() {
@@ -95,22 +100,10 @@ public class MainTeleop extends LinearOpMode {
     }
 
     private void linearSlideControl() {
-        if (gamepad1.dpad_left) {
-            if (!dpadLeftPressed) {
-                dpadLeftPressed = true;
-                robot.increaseLinearSlidePosition(Settings.LINEAR_SLIDE_POWER);
-            }
-        } else {
-            dpadLeftPressed = false;
-        }
-
-        if (gamepad1.dpad_right) {
-            if (!dpadRightPressed) {
-                dpadRightPressed = false;
-                robot.decreaseLinearSlidePosition(Settings.LINEAR_SLIDE_POWER);
-            }
-        } else {
-            dpadRightPressed = false;
+        if (controllerToggles1.dpadLeftToggled()) {
+            robot.increaseLinearSlidePosition(Settings.LINEAR_SLIDE_POWER);
+        } else if (controllerToggles1.dpadRightToggled()) {
+            robot.decreaseLinearSlidePosition(Settings.LINEAR_SLIDE_POWER);
         }
     }
 
@@ -136,22 +129,10 @@ public class MainTeleop extends LinearOpMode {
     }
 
     private void wristControl() {
-        if (gamepad1.dpad_up) {
-            if (!dpadUpPressed) {
-                dpadUpPressed = true;
-                robot.increaseWristPosition();
-            }
-        } else {
-            dpadUpPressed = false;
-        }
-
-        if (gamepad1.dpad_down) {
-            if (!dpadDownPressed) {
-                dpadDownPressed = true;
-                robot.decreaseWristPosition();
-            }
-        } else {
-            dpadDownPressed = false;
+        if (controllerToggles1.dpadUpToggled()) {
+            robot.increaseWristPosition();
+        } else if (controllerToggles1.dpadDownToggled()) {
+            robot.decreaseWristPosition();
         }
     }
 
