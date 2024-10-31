@@ -36,5 +36,5 @@ public final class Settings {
     public static final double BUCKET_RELEASE_POSITION = 0.48;
 
     public static final double LINEAR_SLIDE_POWER = 0.66;
-    public static final double INTAKE_POWER = 0.33;
+    public static final double MAX_INTAKE_POWER = 0.33;
 }
