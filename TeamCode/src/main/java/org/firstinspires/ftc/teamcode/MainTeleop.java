@@ -104,9 +104,9 @@ public class MainTeleop extends LinearOpMode {
     }
 
     private void linearSlideControl() {
-        if (controllerToggles1.dpadUpToggled()) {
+        if (controllerToggles1.isDpadUpToggled()) {
             robot.increaseLinearSlidePosition(Settings.LINEAR_SLIDE_POWER);
-        } else if (controllerToggles1.dpadDownToggled()) {
+        } else if (controllerToggles1.isDpadDownToggled()) {
             robot.decreaseLinearSlidePosition(Settings.LINEAR_SLIDE_POWER);
         }
     }
@@ -125,9 +125,9 @@ public class MainTeleop extends LinearOpMode {
     }
 
     private void wristControl() {
-        if (controllerToggles2.leftBumperToggled()) {
+        if (controllerToggles2.isLeftBumperToggled()) {
             robot.increaseWristPosition();
-        } else if (controllerToggles2.rightBumperToggled()) {
+        } else if (controllerToggles2.isRightBumperToggled()) {
             robot.decreaseWristPosition();
         }
     }
