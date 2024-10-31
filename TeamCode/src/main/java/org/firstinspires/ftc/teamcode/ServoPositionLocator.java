@@ -6,7 +6,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.Servo;
 import java.text.DecimalFormat;
 
-@TeleOp(name="Servo Location Finder",group="Testing")
+@TeleOp(name="Servo Position Locator",group="Testing")
 
 public class ServoPositionLocator extends LinearOpMode {
 

@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.drivebase;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -6,7 +6,9 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import static org.firstinspires.ftc.teamcode.Utility.applyDeadzone;
 import static org.firstinspires.ftc.teamcode.Utility.normalizePowers;
 
-@TeleOp(name="Mecanum Drive", group="Linear OpMode")
+import org.firstinspires.ftc.teamcode.Robot;
+
+@TeleOp(name="Mecanum Drive", group="Drivebase")
 public class TeleopMecanumDrive extends LinearOpMode {
     private static final double DEADZONE_THRESHOLD = 0.1;
 
