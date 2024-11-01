@@ -50,15 +50,13 @@ public class MainTeleop extends LinearOpMode {
             readSensors();
             mecanumDrive(straight, turn, strafe);
             linearSlideControl();
-            clawControl();
             armControl();
             wristControl();
             intakeControl();
             bucketControl();
+            clawControl();
             updateTelemetryData();
-
-            controllerToggles1.update(gamepad1);
-            controllerToggles2.update(gamepad2);
+            updateControllers();
         }
     }
 
@@ -160,17 +158,28 @@ public class MainTeleop extends LinearOpMode {
     }
 
     private void updateTelemetryData() {
-        telemetry.addData("Left Pad Y", straight)
-                .addData("Left Pad X", strafe)
-                .addData("Right Pad X", turn)
-                .addData("Front Left Power", powers[0])
-                .addData("Back Left Power", powers[1])
-                .addData("Front Right Power", powers[2])
-                .addData("Back Right Power", powers[3])
-                .addData("Heading", Math.toDegrees(heading) + 180)
-                .addData("slide", robot.getLinearSlideIndex())
-                .addData("wrist", robot.getWristIndex());
+        telemetry.addData("Controller Data ", "-----")
+                .addData("Left Pad Y: ", straight)
+                .addData("Left Pad X: ", strafe)
+                .addData("Right Pad X: ", turn)
+
+                .addData("Drive Data ", "-----")
+                .addData("Front Left Power: ", powers[0])
+                .addData("Back Left Power: ", powers[1])
+                .addData("Front Right Power: ", powers[2])
+                .addData("Back Right Power: ", powers[3])
+                .addData("Heading: ", Math.toDegrees(heading) + 180)
+
+                .addData("Subsystem Data ", "-----")
+                .addData("Slide Position Index: ", robot.getLinearSlideIndex())
+                .addData("Wrist Position Index: ", robot.getWristIndex())
+                .addData("Arm Position: ", robot.getArmPosition());
 
         telemetry.update();
+    }
+
+    private void updateControllers() {
+        controllerToggles1.update(gamepad1);
+        controllerToggles2.update(gamepad2);
     }
 }
