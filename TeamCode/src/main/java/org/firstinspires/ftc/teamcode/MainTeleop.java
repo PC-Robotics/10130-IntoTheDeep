@@ -11,6 +11,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 /**
  * Controller 1 - Driver
  * joysticks - mecanum drive
+ * bumper left - fine control (half sped)
  * dpad up - linear slide go up
  * dpad down - linear slide go down
  * trigger right - arm go out
@@ -26,6 +27,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
  * dpad left - claw close
  * dpad right - claw open
  */
+
 @TeleOp(name="Main Teleop Program", group="Linear OpMode")
 // TODO - figure out subsystems and seperate drive.
 public class MainTeleop extends LinearOpMode {
@@ -35,9 +37,10 @@ public class MainTeleop extends LinearOpMode {
     private double straight, turn, strafe, heading;
 
     private double gamepad1LeftTrigger, gamepad1RightTrigger, gamepad2LeftTrigger, gamepad2RightTrigger;
+    private boolean gamepad1DpadUp = false, gamepad1DpadDown = false, gamepad2LeftBumper = false, gamepad2RightBumper = false;
 
-    ControllerToggles controllerToggles1 = new ControllerToggles(gamepad1);
-    ControllerToggles controllerToggles2 = new ControllerToggles(gamepad2);
+    // private ControllerToggles controllerToggles1 = new ControllerToggles(gamepad1);
+    // private ControllerToggles controllerToggles2 = new ControllerToggles(gamepad2);
 
     public void runOpMode() {
         robot.init();
@@ -56,7 +59,7 @@ public class MainTeleop extends LinearOpMode {
             bucketControl();
             clawControl();
             updateTelemetryData();
-            updateControllers();
+            // updateControllers();
         }
     }
 
@@ -73,12 +76,18 @@ public class MainTeleop extends LinearOpMode {
 
         robot.linearSlide.setTargetPosition(Settings.LINEAR_SLIDE_STARTING_POSITION);
         robot.linearSlide.setPower(Settings.LINEAR_SLIDE_POWER);
+
+        while (robot.linearSlide.isBusy()) {
+            sleep(10);
+        }
+
+        robot.linearSlide.setPower(0);
     }
 
     private void readSensors() {
         straight = applyDeadzone(gamepad1.left_stick_y, Settings.DEADZONE_THRESHOLD);
+        strafe = -applyDeadzone(gamepad1.left_stick_x, Settings.DEADZONE_THRESHOLD);
         turn = applyDeadzone(gamepad1.right_stick_x, Settings.DEADZONE_THRESHOLD);
-        strafe = applyDeadzone(-gamepad1.left_stick_x, Settings.DEADZONE_THRESHOLD); // invert pad left x
         heading = robot.getHeading(); // in radians
 
         gamepad1RightTrigger = applyDeadzone(gamepad1.right_trigger, Settings.DEADZONE_THRESHOLD);
@@ -89,10 +98,17 @@ public class MainTeleop extends LinearOpMode {
 
     private void mecanumDrive(double straight, double turn, double strafe) {
         // calculate powers
-        powers[0] = straight + turn + strafe; // front left power
-        powers[1] = straight + turn - strafe; // back left power
-        powers[2] = straight - turn - strafe; // front right power
-        powers[3] = straight - turn + strafe; // back right power
+        powers[0] = straight + strafe - turn; // front left power
+        powers[1] = straight - strafe - turn; // back left power
+        powers[2] = straight - strafe + turn; // front right power
+        powers[3] = straight + strafe + turn; // back right power
+
+        // fine control
+        if (gamepad1.left_bumper) {
+            for (int i = 0; i < powers.length; i++) {
+                powers[i] /= 2;
+            }
+        }
 
         // powers array is updated inside this method
         powers = normalizePowers(powers);
@@ -102,10 +118,26 @@ public class MainTeleop extends LinearOpMode {
     }
 
     private void linearSlideControl() {
-        if (controllerToggles1.isDpadUpToggled()) {
-            robot.increaseLinearSlidePosition(Settings.LINEAR_SLIDE_POWER);
-        } else if (controllerToggles1.isDpadDownToggled()) {
-            robot.decreaseLinearSlidePosition(Settings.LINEAR_SLIDE_POWER);
+        if (gamepad1.dpad_up) {
+            if (!gamepad1DpadUp) {
+                robot.increaseLinearSlidePosition(Settings.LINEAR_SLIDE_POWER);
+                gamepad1DpadUp = true;
+            }
+        } else {
+            gamepad1DpadUp = false;
+        }
+
+        if (gamepad1.dpad_down) {
+            if (!gamepad1DpadDown) {
+                robot.decreaseLinearSlidePosition(Settings.LINEAR_SLIDE_POWER);
+                gamepad1DpadDown = true;
+            }
+        } else {
+            gamepad1DpadDown = false;
+        }
+
+        if (!gamepad1.dpad_up && !gamepad1.dpad_down) {
+            robot.linearSlide.setPower(0);
         }
     }
 
@@ -123,10 +155,22 @@ public class MainTeleop extends LinearOpMode {
     }
 
     private void wristControl() {
-        if (controllerToggles2.isLeftBumperToggled()) {
-            robot.increaseWristPosition();
-        } else if (controllerToggles2.isRightBumperToggled()) {
-            robot.decreaseWristPosition();
+        if (gamepad2.left_bumper) {
+            if (!gamepad2LeftBumper) {
+                robot.increaseWristPosition();
+                gamepad2LeftBumper = true;
+            }
+        } else {
+            gamepad2LeftBumper = false;
+        }
+
+        if (gamepad2.right_bumper) {
+            if (!gamepad2RightBumper) {
+                robot.decreaseWristPosition();
+                gamepad2RightBumper = true;
+            }
+        } else {
+            gamepad2RightBumper = false;
         }
     }
 
@@ -143,7 +187,9 @@ public class MainTeleop extends LinearOpMode {
 
     private void bucketControl() {
         if (gamepad2.triangle) {
-            robot.bucket.setPosition(Settings.BUCKET_RELEASE_POSITION);
+            if (!(robot.linearSlide.getTargetPosition() == Settings.LINEAR_SLIDE_STARTING_POSITION && robot.wrist.getPosition() == Settings.WRIST_RELEASE_POSITION)) {
+                robot.bucket.setPosition(Settings.BUCKET_RELEASE_POSITION);
+            }
         } else if (gamepad2.cross) {
             robot.bucket.setPosition(Settings.BUCKET_PICKUP_POSITION);
         }
@@ -178,8 +224,8 @@ public class MainTeleop extends LinearOpMode {
         telemetry.update();
     }
 
-    private void updateControllers() {
-        controllerToggles1.update(gamepad1);
-        controllerToggles2.update(gamepad2);
-    }
+//    private void updateControllers() {
+//        controllerToggles1.update(gamepad1);
+//        controllerToggles2.update(gamepad2);
+//    }
 }

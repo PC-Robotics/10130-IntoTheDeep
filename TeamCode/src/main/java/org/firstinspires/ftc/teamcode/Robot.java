@@ -76,7 +76,7 @@ public class Robot {
         frontLeft = motorInit("frontLeft", DcMotor.Direction.REVERSE, DcMotor.ZeroPowerBehavior.BRAKE);
         backRight = motorInit("backRight", DcMotor.Direction.FORWARD, DcMotor.ZeroPowerBehavior.BRAKE);
         backLeft = motorInit("backLeft", DcMotor.Direction.REVERSE, DcMotor.ZeroPowerBehavior.BRAKE);
-        linearSlide = motorInit("linearSlide", DcMotor.Direction.REVERSE, DcMotor.ZeroPowerBehavior.BRAKE);
+        linearSlide = motorInit("linearSlide", DcMotor.Direction.REVERSE, DcMotor.ZeroPowerBehavior.FLOAT);
         wrist = servoInit("wrist", Servo.Direction.FORWARD);
         intake = CRservoInit("intake", CRServo.Direction.FORWARD);
         right = servoInit("right", Servo.Direction.FORWARD);
@@ -135,17 +135,17 @@ public class Robot {
     // MOVEMENT
 
     public void setMotorPowers(double[] powers) {
-        frontRight.setPower(powers[0]);
-        frontLeft.setPower(powers[1]);
-        backRight.setPower(powers[2]);
-        backLeft.setPower(powers[3]);
+        frontLeft.setPower(powers[0]);
+        backLeft.setPower(powers[1]);
+        frontRight.setPower(powers[2]);
+        backRight.setPower(powers[3]);
     }
 
     public void setMotorPowers(double power) {
-        frontRight.setPower(power);
         frontLeft.setPower(power);
-        backRight.setPower(power);
         backLeft.setPower(power);
+        frontRight.setPower(power);
+        backRight.setPower(power);
     }
 
     public void stopMotors() {
@@ -169,13 +169,21 @@ public class Robot {
             linearSlide.setTargetPosition(Settings.LINEAR_SLIDE_POSITIONS[linearSlideIndex]);
             linearSlide.setPower(power);
         }
+
+        if (linearSlideIndex == 1) {
+            linearSlide.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        }
     }
 
     public void decreaseLinearSlidePosition(double power) {
-        if (linearSlideIndex > 2) {
+        if (linearSlideIndex > 0) {
             linearSlideIndex--;
             linearSlide.setTargetPosition(Settings.LINEAR_SLIDE_POSITIONS[linearSlideIndex]);
             linearSlide.setPower(power);
+        }
+
+        if (linearSlideIndex == 0) {
+            linearSlide.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
         }
     }
 
@@ -194,7 +202,7 @@ public class Robot {
     }
 
     public void decreaseWristPosition() {
-        if (wristIndex > 2) {
+        if (wristIndex > 0) {
             wristIndex--;
             wrist.setPosition(Settings.WRIST_POSITIONS[wristIndex]);
         }
