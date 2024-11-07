@@ -45,16 +45,18 @@ public class MainTeleop extends LinearOpMode {
         initOpMode();
 
         while (opModeIsActive()) {
+            readController();
             readSensors();
-            mecanumDrive(straight, turn, strafe);
+
+            mecanumDrive();
             linearSlideControl();
             armControl();
             wristControl();
             intakeControl();
             bucketControl();
             clawControl();
+
             updateTelemetryData();
-            // updateControllers();
         }
     }
 
@@ -71,19 +73,21 @@ public class MainTeleop extends LinearOpMode {
         robot.stopLinearSlide();
     }
 
-    private void readSensors() {
+    public void readController() {
         straight = applyDeadzone(gamepad1.left_stick_y, Settings.DEADZONE_THRESHOLD);
         strafe = -applyDeadzone(gamepad1.left_stick_x, Settings.DEADZONE_THRESHOLD);
         turn = applyDeadzone(gamepad1.right_stick_x, Settings.DEADZONE_THRESHOLD);
-        heading = robot.getHeading(); // in radians
 
         gamepad1RightTrigger = applyDeadzone(gamepad1.right_trigger, Settings.DEADZONE_THRESHOLD);
         gamepad1LeftTrigger = applyDeadzone(gamepad1.left_trigger, Settings.DEADZONE_THRESHOLD);
         gamepad2LeftTrigger = applyDeadzone(gamepad2.left_trigger, Settings.DEADZONE_THRESHOLD);
         gamepad2RightTrigger = applyDeadzone(gamepad2.right_trigger, Settings.DEADZONE_THRESHOLD);
     }
+    private void readSensors() {
+        heading = robot.getHeading(); // in radians
+    }
 
-    private void mecanumDrive(double straight, double turn, double strafe) {
+    private void mecanumDrive() {
         // calculate powers
         powers[0] = straight + strafe - turn; // front left power
         powers[1] = straight - strafe - turn; // back left power
@@ -121,10 +125,6 @@ public class MainTeleop extends LinearOpMode {
             }
         } else {
             gamepad1DpadDown = false;
-        }
-
-        if (!gamepad1.dpad_up && !gamepad1.dpad_down) {
-            robot.linearSlide.setPower(0);
         }
     }
 
