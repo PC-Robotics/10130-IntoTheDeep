@@ -206,7 +206,7 @@ public class MainTeleop extends LinearOpMode {
                 .addData("Subsystem Data ", "-----")
                 .addData("Slide Position Index: ", robot.getLinearSlideIndex())
                 .addData("Wrist Position Index: ", robot.getWristIndex())
-                .addData("Arm Position: ", robot.getArmPosition());
+                .addData("Arm Position: ", robot.getTrolleyPosition());
 
         telemetry.update();
     }
