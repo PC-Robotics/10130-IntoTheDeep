@@ -37,6 +37,4 @@ public final class Settings {
 
     public static final double LINEAR_SLIDE_POWER = 0.66;
     public static final double MAX_INTAKE_POWER = 0.33;
-
-    public static final double kP = 0.5;
 }
