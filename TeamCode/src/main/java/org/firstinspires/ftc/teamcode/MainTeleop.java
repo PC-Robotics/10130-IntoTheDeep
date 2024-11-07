@@ -6,7 +6,6 @@ import static org.firstinspires.ftc.teamcode.Utility.normalizePowers;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.DcMotor;
 
 /**
  * Controller 1 - Driver
@@ -16,7 +15,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
  * dpad down - linear slide go down
  * trigger right - arm go out
  * trigger left - arm go in
- *
+
  * Controller 2 - Operator
  * bumper left - wrist go left
  * bumper right - wrist go right
@@ -38,10 +37,6 @@ public class MainTeleop extends LinearOpMode {
 
     private double gamepad1LeftTrigger, gamepad1RightTrigger, gamepad2LeftTrigger, gamepad2RightTrigger;
     private boolean gamepad1DpadUp = false, gamepad1DpadDown = false, gamepad2LeftBumper = false, gamepad2RightBumper = false;
-
-    // private ControllerToggles controllerToggles1 = new ControllerToggles(gamepad1);
-    // private ControllerToggles controllerToggles2 = new ControllerToggles(gamepad2);
-
     public void runOpMode() {
         robot.init();
         waitForStart();
@@ -64,24 +59,16 @@ public class MainTeleop extends LinearOpMode {
     }
 
     private void initOpMode() {
-        robot.linearSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        robot.linearSlide.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        robot.linearSlide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        robot.linearSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-
         robot.setArmPosition(Settings.ARM_IN_POSITION);
         robot.wrist.setPosition(Settings.WRIST_DRIVING_POSITION);
         robot.bucket.setPosition(Settings.BUCKET_PICKUP_POSITION);
         robot.claw.setPosition(Settings.CLAW_OPEN_POSITION);
 
-        robot.linearSlide.setTargetPosition(Settings.LINEAR_SLIDE_STARTING_POSITION);
-        robot.linearSlide.setPower(Settings.LINEAR_SLIDE_POWER);
-
+        robot.runLinearSlideToPosition(Settings.LINEAR_SLIDE_STARTING_POSITION, Settings.LINEAR_SLIDE_POWER);
         while (robot.linearSlide.isBusy()) {
             sleep(10);
         }
-
-        robot.linearSlide.setPower(0);
+        robot.stopLinearSlide();
     }
 
     private void readSensors() {
@@ -223,9 +210,4 @@ public class MainTeleop extends LinearOpMode {
 
         telemetry.update();
     }
-
-//    private void updateControllers() {
-//        controllerToggles1.update(gamepad1);
-//        controllerToggles2.update(gamepad2);
-//    }
 }

@@ -117,6 +117,9 @@ public class Robot {
         DcMotor motor = myOpMode.hardwareMap.get(DcMotor.class, motorName);
         motor.setDirection(direction);
         motor.setZeroPowerBehavior(zeroPowerBehavior);
+
+        motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         return motor;
     }
 
@@ -166,8 +169,7 @@ public class Robot {
     public void increaseLinearSlidePosition(double power) {
         if (linearSlideIndex < 2) {
             linearSlideIndex++;
-            linearSlide.setTargetPosition(Settings.LINEAR_SLIDE_POSITIONS[linearSlideIndex]);
-            linearSlide.setPower(power);
+            runLinearSlideToPosition(Settings.LINEAR_SLIDE_POSITIONS[linearSlideIndex], power);
         }
 
         if (linearSlideIndex == 1) {
@@ -178,8 +180,7 @@ public class Robot {
     public void decreaseLinearSlidePosition(double power) {
         if (linearSlideIndex > 0) {
             linearSlideIndex--;
-            linearSlide.setTargetPosition(Settings.LINEAR_SLIDE_POSITIONS[linearSlideIndex]);
-            linearSlide.setPower(power);
+            runLinearSlideToPosition(Settings.LINEAR_SLIDE_POSITIONS[linearSlideIndex], power);
         }
 
         if (linearSlideIndex == 0) {
@@ -189,6 +190,19 @@ public class Robot {
 
     public int getLinearSlideIndex() {
         return linearSlideIndex;
+    }
+
+    // HELPERS
+
+    public void runLinearSlideToPosition(int position, double power) {
+        linearSlide.setTargetPosition(position);
+        linearSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        linearSlide.setPower(power);
+    }
+
+    public void stopLinearSlide() {
+        linearSlide.setPower(0);
+        linearSlide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
 
 
