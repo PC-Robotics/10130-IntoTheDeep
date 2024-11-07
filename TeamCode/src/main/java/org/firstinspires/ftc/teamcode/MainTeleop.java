@@ -128,17 +128,17 @@ public class MainTeleop extends LinearOpMode {
         }
     }
 
-    private void armControl() {
-        double newArmPosition = robot.getArmPosition();
+    private void trolleyControl() {
+        double newTrolleyPosition = robot.getTrolleyPosition();
 
         if (gamepad1RightTrigger != 0) {
-            newArmPosition -= (gamepad1RightTrigger / 300);
+            newTrolleyPosition -= (gamepad1RightTrigger / 300);
         } else if (gamepad1LeftTrigger != 0) {
-            newArmPosition += (gamepad1LeftTrigger / 300);
+            newTrolleyPosition += (gamepad1LeftTrigger / 300);
         }
 
-        newArmPosition = clamp(newArmPosition, Settings.ARM_OUT_POSITION, Settings.ARM_IN_POSITION);
-        robot.setArmPosition(newArmPosition);
+        newTrolleyPosition = clamp(newTrolleyPosition, Settings.ARM_OUT_POSITION, Settings.ARM_IN_POSITION);
+        robot.setTrolleyPosition(newTrolleyPosition);
     }
 
     private void wristControl() {

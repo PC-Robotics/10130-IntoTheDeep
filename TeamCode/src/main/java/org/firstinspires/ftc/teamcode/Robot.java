@@ -2,7 +2,6 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.IMU;
@@ -21,8 +20,8 @@ public class Robot {
     public DcMotor linearSlide = null;
     public Servo wrist = null;
     public CRServo intake = null;
-    public Servo right = null;
-    public Servo left = null;
+    public Servo trolleyRight = null;
+    public Servo trolleyLeft = null;
     public Servo claw = null;
     public Servo bucket = null;
     public IMU imu = null;
@@ -79,8 +78,8 @@ public class Robot {
         linearSlide = motorInit("linearSlide", DcMotor.Direction.REVERSE, DcMotor.ZeroPowerBehavior.FLOAT);
         wrist = servoInit("wrist", Servo.Direction.FORWARD);
         intake = CRservoInit("intake", CRServo.Direction.FORWARD);
-        right = servoInit("right", Servo.Direction.FORWARD);
-        left = servoInit("left", Servo.Direction.FORWARD);
+        trolleyRight = servoInit("right", Servo.Direction.FORWARD);
+        trolleyLeft = servoInit("left", Servo.Direction.FORWARD);
         claw = servoInit("claw", Servo.Direction.FORWARD);
         bucket = servoInit("bucket", Servo.Direction.FORWARD);
 
@@ -155,13 +154,13 @@ public class Robot {
         setMotorPowers(0);
     }
 
-    public void setArmPosition(double position) {
-        right.setPosition(position);
-        left.setPosition(position);
+    public void setTrolleyPosition(double position) {
+        trolleyRight.setPosition(position);
+        trolleyLeft.setPosition(position);
     }
 
-    public double getArmPosition() {
-        return (right.getPosition() + left.getPosition()) / 2;
+    public double getTrolleyPosition() {
+        return (trolleyRight.getPosition() + trolleyLeft.getPosition()) / 2;
     }
 
     private int linearSlideIndex = 0;
