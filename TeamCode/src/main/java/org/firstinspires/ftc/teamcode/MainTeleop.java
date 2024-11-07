@@ -50,7 +50,7 @@ public class MainTeleop extends LinearOpMode {
 
             mecanumDrive();
             linearSlideControl();
-            armControl();
+            trolleyControl();
             wristControl();
             intakeControl();
             bucketControl();
@@ -61,7 +61,7 @@ public class MainTeleop extends LinearOpMode {
     }
 
     private void initOpMode() {
-        robot.setArmPosition(Settings.ARM_IN_POSITION);
+        robot.setTrolleyPosition(Settings.ARM_IN_POSITION);
         robot.wrist.setPosition(Settings.WRIST_DRIVING_POSITION);
         robot.bucket.setPosition(Settings.BUCKET_PICKUP_POSITION);
         robot.claw.setPosition(Settings.CLAW_OPEN_POSITION);
