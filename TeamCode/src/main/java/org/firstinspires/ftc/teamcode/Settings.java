@@ -72,11 +72,30 @@ public class Settings {
         public static int DEFAULT_DRIVE_TIMEOUT_MS = 3000;
         public static double DEFAULT_DRIVE_MAX_POWER = 0.5;
         public static double DEFAULT_DRIVE_MIN_POWER = 0.1;
-        public static double DRIVE_ELIPSON = 3;
 
         public static int DEFAULT_TURN_TIMEOUT_MS = 2000;
         public static double DEFAULT_TURN_MAX_POWER = 0.5;
         public static double DEFAULT_TURN_MIN_POWER = 0.1;
-        public static double TURN_ELIPSON = (3 * 2 * Math.PI) / 360; // 3 degrees
+
+        /**
+         * PID constants for the drive and turn methods:
+         * - kP: Proportional constant (robot will slow down the closer it gets to the target)
+         * - kI: Integral constant (robot will correct for small errors over time)
+         * - kD: Derivative constant (robot will slow down as it approaches the target)
+         * - ELIPSON: The error threshold for the robot to stop moving
+         */
+
+        public static class DrivePID {
+            public static double kP = 1.5;
+
+            public static double ELIPSON = 3;
+
+        }
+
+        public static class TurnPID {
+            public static double kP = 1.5;
+
+            public static double ELIPSON = 3;
+        }
     }
 }

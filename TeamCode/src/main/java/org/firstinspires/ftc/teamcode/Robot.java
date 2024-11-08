@@ -111,7 +111,11 @@ public class Robot {
 
     // get the heading of the robot in radians
     public double getHeading() {
-        return imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS);
+        return getHeading(AngleUnit.RADIANS);
+    }
+
+    public double getHeading(AngleUnit unit) {
+        return imu.getRobotYawPitchRollAngles().getYaw(unit);
     }
 
 
@@ -161,6 +165,10 @@ public class Robot {
         backLeft.setPower(backLeftPower);
         frontRight.setPower(frontRightPower);
         backRight.setPower(backRightPower);
+    }
+
+    public double getAverageDrivePosition() {
+        return (double) (frontLeft.getCurrentPosition() + frontRight.getCurrentPosition() + backLeft.getCurrentPosition() + backRight.getCurrentPosition()) / 4;
     }
 
     public void stopMotors() {
@@ -246,40 +254,64 @@ public class Robot {
     }
 
     public void driveDistance(double distance_in, int timeout) {
-        double startingTime = timer.milliseconds();
-        double elapsedTime = 0;
+        double startingTime = timer.milliseconds(); // get the current time
+        double elapsedTime = 0; // timer creation
 
-        double drivePosition = (double) (frontLeft.getCurrentPosition() + frontRight.getCurrentPosition() + backLeft.getCurrentPosition() + backRight.getCurrentPosition()) / (4 * Settings.Autonomous.TICKS_PER_IN);
-        double target = drivePosition + distance_in;
-        double error = distance_in;
-        while (Math.abs(error) < Settings.Autonomous.DRIVE_ELIPSON && elapsedTime < timeout && myOpMode.opModeIsActive()) {
-            drivePosition = (double) (frontLeft.getCurrentPosition() + frontRight.getCurrentPosition() + backLeft.getCurrentPosition() + backRight.getCurrentPosition()) / (4 * Settings.Autonomous.TICKS_PER_IN);
+        double drivePosition = getAverageDrivePosition(); // get the current position of the drive
+        double target = drivePosition + distance_in; // set the target position (current position + distance you want to travel)
+        double error = distance_in; // Error - the distance between the current position and the target position (how much we have left to travel)
+
+        // check if opMode is active (so we can stop the robot)
+        // check if the error is less than a certain value (else the robot will have to drive to inifinite presicion)
+        // check if the timer hasn't reached the timeout (so the robot doesn't drive forever)
+        while (Math.abs(error) < Settings.Autonomous.DrivePID.ELIPSON && elapsedTime < timeout && myOpMode.opModeIsActive()) {
+            // for every loop, get the current position of the drive and recalculate the error
+            drivePosition = getAverageDrivePosition();
             error = target - drivePosition;
 
-            double power = clamp(Math.abs(error) / distance_in, Settings.Autonomous.DEFAULT_DRIVE_MIN_POWER, Settings.Autonomous.DEFAULT_DRIVE_MAX_POWER);
+            // make sure the power is within the min and max power values (with the clamp function)
+            double power = clamp(
+                    (Math.abs(error) * Settings.Autonomous.DrivePID.kP) / 100,
+                    Settings.Autonomous.DEFAULT_DRIVE_MIN_POWER,
+                    Settings.Autonomous.DEFAULT_DRIVE_MAX_POWER
+            );
+
+            // set the motor powers to the power value
             setMotorPowers(power);
 
+            // update the elapsed time
             elapsedTime = timer.milliseconds() - startingTime;
         }
     }
 
-    public void turnAbsolute(double angle) {
-        turnAbsolute(angle, Settings.Autonomous.DEFAULT_TURN_TIMEOUT_MS);
+    public void turnAbsolute(double targetAngle_degrees) {
+        turnAbsolute(targetAngle_degrees, Settings.Autonomous.DEFAULT_TURN_TIMEOUT_MS);
     }
 
-    public void turnAbsolute(double angle, int timeout) {
-        double startingTime = timer.milliseconds();
-        double elapsedTime = 0;
+    public void turnAbsolute(double targetAngle_degrees, int timeout) {;
+        double startingTime = timer.milliseconds(); // get the current time
+        double elapsedTime = 0; // timer creation
 
-        double target = angle;
-        double error = angle - getHeading();
-        while (Math.abs(error) < Settings.Autonomous.TURN_ELIPSON && elapsedTime < timeout && myOpMode.opModeIsActive()) {
-            double heading = getHeading();
-            error = target - heading;
+        // since we are turning absolute, our target _is_ the parameter that we pass in.
+        double error = targetAngle_degrees - getHeading(AngleUnit.DEGREES); // Error - the difference between the target angle and the current angle (how much we have left to turn)
 
-            double power = clamp(Math.abs(error) / angle, Settings.Autonomous.DEFAULT_TURN_MIN_POWER, Settings.Autonomous.DEFAULT_TURN_MAX_POWER);
+        // check if opMode is active (so we can stop the robot)
+        // check if the error is less than a certain value (else the robot will have to turn to inifinite presicion)
+        // check if the timer hasn't reached the timeout (so the robot doesn't turn forever)
+        while (Math.abs(error) < Settings.Autonomous.TurnPID.ELIPSON && elapsedTime < timeout && myOpMode.opModeIsActive()) {
+            error = targetAngle_degrees - getHeading(AngleUnit.DEGREES); // recalculate the error
+
+            // make sure the power is within the min and max power values (with the clamp function)
+            double power = clamp(
+                    (Math.abs(error) * Settings.Autonomous.TurnPID.kP) / 100,
+                    Settings.Autonomous.DEFAULT_TURN_MIN_POWER,
+                    Settings.Autonomous.DEFAULT_TURN_MAX_POWER
+            );
+
+            // set the motor powers to the power value
             setMotorPowers(power, power, -power, -power);
 
+            // update the elapsed time
             elapsedTime = timer.milliseconds() - startingTime;
         }
     }
