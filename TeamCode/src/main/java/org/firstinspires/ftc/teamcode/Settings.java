@@ -19,6 +19,7 @@ public final class Settings {
 
     public static final class LinearSlide {
         public static final double POWER = 0.66;
+        public static final double FINE_CONTROL_POWER = 0.33;
 
         public static final int STARTING_POSITION = 0;
         public static final int FIRST_BUCKET_POSITION = 2700;

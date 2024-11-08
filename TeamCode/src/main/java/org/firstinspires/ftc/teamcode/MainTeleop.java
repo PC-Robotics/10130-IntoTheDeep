@@ -13,6 +13,8 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
  * bumper left - fine control (half sped)
  * dpad up - linear slide go up
  * dpad down - linear slide go down
+ * dpad left - linear slide manual down
+ * dpad right - linear slide manual up
  * trigger right - arm go out
  * trigger left - arm go in
 
@@ -109,22 +111,37 @@ public class MainTeleop extends LinearOpMode {
     }
 
     private void linearSlideControl() {
-        if (gamepad1.dpad_up) {
+        if (gamepad1.dpad_left || gamepad1.dpad_right) { // fine control
+            int newLinearSlidePosition = robot.linearSlide.getCurrentPosition();
+            if (gamepad1.dpad_left) {
+                newLinearSlidePosition += 50;
+            } else {
+                newLinearSlidePosition -= 50;
+            }
+
+            newLinearSlidePosition = clamp(newLinearSlidePosition, Settings.LinearSlide.STARTING_POSITION, Settings.LinearSlide.SECOND_BUCKET_POSITION);
+            robot.runLinearSlideToPosition(newLinearSlidePosition, Settings.LinearSlide.FINE_CONTROL_POWER);
+
+        } else if (gamepad1.dpad_up) { // run to set positions
             if (!gamepad1DpadUp) {
                 robot.increaseLinearSlidePosition(Settings.LinearSlide.POWER);
                 gamepad1DpadUp = true;
             }
         } else {
             gamepad1DpadUp = false;
+
+            if (gamepad1.dpad_down) {
+                if (!gamepad1DpadDown) {
+                    robot.decreaseLinearSlidePosition(Settings.LinearSlide.POWER);
+                    gamepad1DpadDown = true;
+                }
+            } else {
+                gamepad1DpadDown = false;
+            }
         }
 
-        if (gamepad1.dpad_down) {
-            if (!gamepad1DpadDown) {
-                robot.decreaseLinearSlidePosition(Settings.LinearSlide.POWER);
-                gamepad1DpadDown = true;
-            }
-        } else {
-            gamepad1DpadDown = false;
+        if (!robot.linearSlide.isBusy()) {
+            robot.stopLinearSlide();
         }
     }
 
