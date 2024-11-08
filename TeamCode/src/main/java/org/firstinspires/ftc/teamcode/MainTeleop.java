@@ -6,16 +6,16 @@ import static org.firstinspires.ftc.teamcode.Utility.normalizePowers;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.DcMotor;
 
 /**
  * Controller 1 - Driver
  * joysticks - mecanum drive
+ * bumper left - fine control (half sped)
  * dpad up - linear slide go up
  * dpad down - linear slide go down
  * trigger right - arm go out
  * trigger left - arm go in
- *
+
  * Controller 2 - Operator
  * bumper left - wrist go left
  * bumper right - wrist go right
@@ -26,6 +26,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
  * dpad left - claw close
  * dpad right - claw open
  */
+
 @TeleOp(name="Main Teleop Program", group="Linear OpMode")
 // TODO - figure out subsystems and seperate drive.
 public class MainTeleop extends LinearOpMode {
@@ -35,10 +36,7 @@ public class MainTeleop extends LinearOpMode {
     private double straight, turn, strafe, heading;
 
     private double gamepad1LeftTrigger, gamepad1RightTrigger, gamepad2LeftTrigger, gamepad2RightTrigger;
-
-    ControllerToggles controllerToggles1 = new ControllerToggles(gamepad1);
-    ControllerToggles controllerToggles2 = new ControllerToggles(gamepad2);
-
+    private boolean gamepad1DpadUp = false, gamepad1DpadDown = false, gamepad2LeftBumper = false, gamepad2RightBumper = false;
     public void runOpMode() {
         robot.init();
         waitForStart();
@@ -47,52 +45,61 @@ public class MainTeleop extends LinearOpMode {
         initOpMode();
 
         while (opModeIsActive()) {
+            readController();
             readSensors();
-            mecanumDrive(straight, turn, strafe);
+
+            mecanumDrive();
             linearSlideControl();
-            armControl();
+            trolleyControl();
             wristControl();
             intakeControl();
             bucketControl();
             clawControl();
+
             updateTelemetryData();
-            updateControllers();
         }
     }
 
     private void initOpMode() {
-        robot.linearSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        robot.linearSlide.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        robot.linearSlide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        robot.linearSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-
-        robot.setArmPosition(Settings.ARM_IN_POSITION);
+        robot.setTrolleyPosition(Settings.ARM_IN_POSITION);
         robot.wrist.setPosition(Settings.WRIST_DRIVING_POSITION);
         robot.bucket.setPosition(Settings.BUCKET_PICKUP_POSITION);
         robot.claw.setPosition(Settings.CLAW_OPEN_POSITION);
 
-        robot.linearSlide.setTargetPosition(Settings.LINEAR_SLIDE_STARTING_POSITION);
-        robot.linearSlide.setPower(Settings.LINEAR_SLIDE_POWER);
+        robot.runLinearSlideToPosition(Settings.LINEAR_SLIDE_STARTING_POSITION, Settings.LINEAR_SLIDE_POWER);
+        while (robot.linearSlide.isBusy()) {
+            sleep(10);
+        }
+        robot.stopLinearSlide();
     }
 
-    private void readSensors() {
+    public void readController() {
         straight = applyDeadzone(gamepad1.left_stick_y, Settings.DEADZONE_THRESHOLD);
+        strafe = -applyDeadzone(gamepad1.left_stick_x, Settings.DEADZONE_THRESHOLD);
         turn = applyDeadzone(gamepad1.right_stick_x, Settings.DEADZONE_THRESHOLD);
-        strafe = applyDeadzone(-gamepad1.left_stick_x, Settings.DEADZONE_THRESHOLD); // invert pad left x
-        heading = robot.getHeading(); // in radians
 
         gamepad1RightTrigger = applyDeadzone(gamepad1.right_trigger, Settings.DEADZONE_THRESHOLD);
         gamepad1LeftTrigger = applyDeadzone(gamepad1.left_trigger, Settings.DEADZONE_THRESHOLD);
         gamepad2LeftTrigger = applyDeadzone(gamepad2.left_trigger, Settings.DEADZONE_THRESHOLD);
         gamepad2RightTrigger = applyDeadzone(gamepad2.right_trigger, Settings.DEADZONE_THRESHOLD);
     }
+    private void readSensors() {
+        heading = robot.getHeading(); // in radians
+    }
 
-    private void mecanumDrive(double straight, double turn, double strafe) {
+    private void mecanumDrive() {
         // calculate powers
-        powers[0] = straight + turn + strafe; // front left power
-        powers[1] = straight + turn - strafe; // back left power
-        powers[2] = straight - turn - strafe; // front right power
-        powers[3] = straight - turn + strafe; // back right power
+        powers[0] = straight + strafe - turn; // front left power
+        powers[1] = straight - strafe - turn; // back left power
+        powers[2] = straight - strafe + turn; // front right power
+        powers[3] = straight + strafe + turn; // back right power
+
+        // fine control
+        if (gamepad1.left_bumper) {
+            for (int i = 0; i < powers.length; i++) {
+                powers[i] /= 2;
+            }
+        }
 
         // powers array is updated inside this method
         powers = normalizePowers(powers);
@@ -102,31 +109,55 @@ public class MainTeleop extends LinearOpMode {
     }
 
     private void linearSlideControl() {
-        if (controllerToggles1.isDpadUpToggled()) {
-            robot.increaseLinearSlidePosition(Settings.LINEAR_SLIDE_POWER);
-        } else if (controllerToggles1.isDpadDownToggled()) {
-            robot.decreaseLinearSlidePosition(Settings.LINEAR_SLIDE_POWER);
+        if (gamepad1.dpad_up) {
+            if (!gamepad1DpadUp) {
+                robot.increaseLinearSlidePosition(Settings.LINEAR_SLIDE_POWER);
+                gamepad1DpadUp = true;
+            }
+        } else {
+            gamepad1DpadUp = false;
+        }
+
+        if (gamepad1.dpad_down) {
+            if (!gamepad1DpadDown) {
+                robot.decreaseLinearSlidePosition(Settings.LINEAR_SLIDE_POWER);
+                gamepad1DpadDown = true;
+            }
+        } else {
+            gamepad1DpadDown = false;
         }
     }
 
-    private void armControl() {
-        double newArmPosition = robot.getArmPosition();
+    private void trolleyControl() {
+        double newTrolleyPosition = robot.getTrolleyPosition();
 
         if (gamepad1RightTrigger != 0) {
-            newArmPosition -= (gamepad1RightTrigger / 300);
+            newTrolleyPosition -= (gamepad1RightTrigger / 300);
         } else if (gamepad1LeftTrigger != 0) {
-            newArmPosition += (gamepad1LeftTrigger / 300);
+            newTrolleyPosition += (gamepad1LeftTrigger / 300);
         }
 
-        newArmPosition = clamp(newArmPosition, Settings.ARM_OUT_POSITION, Settings.ARM_IN_POSITION);
-        robot.setArmPosition(newArmPosition);
+        newTrolleyPosition = clamp(newTrolleyPosition, Settings.ARM_OUT_POSITION, Settings.ARM_IN_POSITION);
+        robot.setTrolleyPosition(newTrolleyPosition);
     }
 
     private void wristControl() {
-        if (controllerToggles2.isLeftBumperToggled()) {
-            robot.increaseWristPosition();
-        } else if (controllerToggles2.isRightBumperToggled()) {
-            robot.decreaseWristPosition();
+        if (gamepad2.left_bumper) {
+            if (!gamepad2LeftBumper) {
+                robot.increaseWristPosition();
+                gamepad2LeftBumper = true;
+            }
+        } else {
+            gamepad2LeftBumper = false;
+        }
+
+        if (gamepad2.right_bumper) {
+            if (!gamepad2RightBumper) {
+                robot.decreaseWristPosition();
+                gamepad2RightBumper = true;
+            }
+        } else {
+            gamepad2RightBumper = false;
         }
     }
 
@@ -143,7 +174,9 @@ public class MainTeleop extends LinearOpMode {
 
     private void bucketControl() {
         if (gamepad2.triangle) {
-            robot.bucket.setPosition(Settings.BUCKET_RELEASE_POSITION);
+            if (!(robot.linearSlide.getTargetPosition() == Settings.LINEAR_SLIDE_STARTING_POSITION && robot.wrist.getPosition() == Settings.WRIST_RELEASE_POSITION)) {
+                robot.bucket.setPosition(Settings.BUCKET_RELEASE_POSITION);
+            }
         } else if (gamepad2.cross) {
             robot.bucket.setPosition(Settings.BUCKET_PICKUP_POSITION);
         }
@@ -173,13 +206,8 @@ public class MainTeleop extends LinearOpMode {
                 .addData("Subsystem Data ", "-----")
                 .addData("Slide Position Index: ", robot.getLinearSlideIndex())
                 .addData("Wrist Position Index: ", robot.getWristIndex())
-                .addData("Arm Position: ", robot.getArmPosition());
+                .addData("Arm Position: ", robot.getTrolleyPosition());
 
         telemetry.update();
-    }
-
-    private void updateControllers() {
-        controllerToggles1.update(gamepad1);
-        controllerToggles2.update(gamepad2);
     }
 }

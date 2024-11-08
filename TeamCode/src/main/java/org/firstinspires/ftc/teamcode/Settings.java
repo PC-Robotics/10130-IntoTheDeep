@@ -12,8 +12,8 @@ public final class Settings {
     public static final double ARM_OUT_POSITION = 0.188;
 
     public static final int LINEAR_SLIDE_STARTING_POSITION = 0;
-    public static final int LINEAR_SLIDE_FIRST_BUCKET_POSITION = 2500;
-    public static final int LINEAR_SLIDE_SECOND_BUCKET_POSITION = 4250;
+    public static final int LINEAR_SLIDE_FIRST_BUCKET_POSITION = 2700;
+    public static final int LINEAR_SLIDE_SECOND_BUCKET_POSITION = 4220;
     public static final int[] LINEAR_SLIDE_POSITIONS = {
             LINEAR_SLIDE_STARTING_POSITION,
             LINEAR_SLIDE_FIRST_BUCKET_POSITION,

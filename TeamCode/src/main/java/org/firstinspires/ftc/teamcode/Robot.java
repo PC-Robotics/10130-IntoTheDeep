@@ -2,7 +2,6 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.IMU;
@@ -21,8 +20,8 @@ public class Robot {
     public DcMotor linearSlide = null;
     public Servo wrist = null;
     public CRServo intake = null;
-    public Servo right = null;
-    public Servo left = null;
+    public Servo trolleyRight = null;
+    public Servo trolleyLeft = null;
     public Servo claw = null;
     public Servo bucket = null;
     public IMU imu = null;
@@ -76,11 +75,11 @@ public class Robot {
         frontLeft = motorInit("frontLeft", DcMotor.Direction.REVERSE, DcMotor.ZeroPowerBehavior.BRAKE);
         backRight = motorInit("backRight", DcMotor.Direction.FORWARD, DcMotor.ZeroPowerBehavior.BRAKE);
         backLeft = motorInit("backLeft", DcMotor.Direction.REVERSE, DcMotor.ZeroPowerBehavior.BRAKE);
-        linearSlide = motorInit("linearSlide", DcMotor.Direction.REVERSE, DcMotor.ZeroPowerBehavior.BRAKE);
+        linearSlide = motorInit("linearSlide", DcMotor.Direction.REVERSE, DcMotor.ZeroPowerBehavior.FLOAT);
         wrist = servoInit("wrist", Servo.Direction.FORWARD);
         intake = CRservoInit("intake", CRServo.Direction.FORWARD);
-        right = servoInit("right", Servo.Direction.FORWARD);
-        left = servoInit("left", Servo.Direction.FORWARD);
+        trolleyRight = servoInit("right", Servo.Direction.FORWARD);
+        trolleyLeft = servoInit("left", Servo.Direction.FORWARD);
         claw = servoInit("claw", Servo.Direction.FORWARD);
         bucket = servoInit("bucket", Servo.Direction.FORWARD);
 
@@ -117,6 +116,9 @@ public class Robot {
         DcMotor motor = myOpMode.hardwareMap.get(DcMotor.class, motorName);
         motor.setDirection(direction);
         motor.setZeroPowerBehavior(zeroPowerBehavior);
+
+        motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         return motor;
     }
 
@@ -135,30 +137,30 @@ public class Robot {
     // MOVEMENT
 
     public void setMotorPowers(double[] powers) {
-        frontRight.setPower(powers[0]);
-        frontLeft.setPower(powers[1]);
-        backRight.setPower(powers[2]);
-        backLeft.setPower(powers[3]);
+        frontLeft.setPower(powers[0]);
+        backLeft.setPower(powers[1]);
+        frontRight.setPower(powers[2]);
+        backRight.setPower(powers[3]);
     }
 
     public void setMotorPowers(double power) {
-        frontRight.setPower(power);
         frontLeft.setPower(power);
-        backRight.setPower(power);
         backLeft.setPower(power);
+        frontRight.setPower(power);
+        backRight.setPower(power);
     }
 
     public void stopMotors() {
         setMotorPowers(0);
     }
 
-    public void setArmPosition(double position) {
-        right.setPosition(position);
-        left.setPosition(position);
+    public void setTrolleyPosition(double position) {
+        trolleyRight.setPosition(position);
+        trolleyLeft.setPosition(position);
     }
 
-    public double getArmPosition() {
-        return (right.getPosition() + left.getPosition()) / 2;
+    public double getTrolleyPosition() {
+        return (trolleyRight.getPosition() + trolleyLeft.getPosition()) / 2;
     }
 
     private int linearSlideIndex = 0;
@@ -166,21 +168,40 @@ public class Robot {
     public void increaseLinearSlidePosition(double power) {
         if (linearSlideIndex < 2) {
             linearSlideIndex++;
-            linearSlide.setTargetPosition(Settings.LINEAR_SLIDE_POSITIONS[linearSlideIndex]);
-            linearSlide.setPower(power);
+            runLinearSlideToPosition(Settings.LINEAR_SLIDE_POSITIONS[linearSlideIndex], power);
+        }
+
+        if (linearSlideIndex == 1) {
+            linearSlide.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         }
     }
 
     public void decreaseLinearSlidePosition(double power) {
-        if (linearSlideIndex > 2) {
+        if (linearSlideIndex > 0) {
             linearSlideIndex--;
-            linearSlide.setTargetPosition(Settings.LINEAR_SLIDE_POSITIONS[linearSlideIndex]);
-            linearSlide.setPower(power);
+            runLinearSlideToPosition(Settings.LINEAR_SLIDE_POSITIONS[linearSlideIndex], power);
+        }
+
+        if (linearSlideIndex == 0) {
+            linearSlide.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
         }
     }
 
     public int getLinearSlideIndex() {
         return linearSlideIndex;
+    }
+
+    // HELPERS
+
+    public void runLinearSlideToPosition(int position, double power) {
+        linearSlide.setTargetPosition(position);
+        linearSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        linearSlide.setPower(power);
+    }
+
+    public void stopLinearSlide() {
+        linearSlide.setPower(0);
+        linearSlide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
 
 
@@ -194,7 +215,7 @@ public class Robot {
     }
 
     public void decreaseWristPosition() {
-        if (wristIndex > 2) {
+        if (wristIndex > 0) {
             wristIndex--;
             wrist.setPosition(Settings.WRIST_POSITIONS[wristIndex]);
         }
