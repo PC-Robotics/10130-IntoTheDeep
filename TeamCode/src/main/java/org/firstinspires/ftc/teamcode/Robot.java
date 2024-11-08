@@ -241,22 +241,22 @@ public class Robot {
 
     // DRIVE
 
-    public void driveDistance(double distance_mm) {
-        driveDistance(distance_mm, Settings.Autonomous.DEFAULT_DRIVE_TIMEOUT_MS);
+    public void driveDistance(double distance_in) {
+        driveDistance(distance_in, Settings.Autonomous.DEFAULT_DRIVE_TIMEOUT_MS);
     }
 
-    public void driveDistance(double distance_mm, int timeout) {
+    public void driveDistance(double distance_in, int timeout) {
         double startingTime = timer.milliseconds();
         double elapsedTime = 0;
 
-        double drivePosition = (double) (frontLeft.getCurrentPosition() + frontRight.getCurrentPosition() + backLeft.getCurrentPosition() + backRight.getCurrentPosition()) / (4 * Settings.Autonomous.TICKS_PER_MM);
-        double target = drivePosition + distance_mm;
-        double error = distance_mm;
+        double drivePosition = (double) (frontLeft.getCurrentPosition() + frontRight.getCurrentPosition() + backLeft.getCurrentPosition() + backRight.getCurrentPosition()) / (4 * Settings.Autonomous.TICKS_PER_IN);
+        double target = drivePosition + distance_in;
+        double error = distance_in;
         while (Math.abs(error) < Settings.Autonomous.DRIVE_ELIPSON && elapsedTime < timeout && myOpMode.opModeIsActive()) {
-            drivePosition = (double) (frontLeft.getCurrentPosition() + frontRight.getCurrentPosition() + backLeft.getCurrentPosition() + backRight.getCurrentPosition()) / (4 * Settings.Autonomous.TICKS_PER_MM);
+            drivePosition = (double) (frontLeft.getCurrentPosition() + frontRight.getCurrentPosition() + backLeft.getCurrentPosition() + backRight.getCurrentPosition()) / (4 * Settings.Autonomous.TICKS_PER_IN);
             error = target - drivePosition;
 
-            double power = clamp(Math.abs(error) / distance_mm, Settings.Autonomous.DEFAULT_DRIVE_MIN_POWER, Settings.Autonomous.DEFAULT_DRIVE_MAX_POWER);
+            double power = clamp(Math.abs(error) / distance_in, Settings.Autonomous.DEFAULT_DRIVE_MIN_POWER, Settings.Autonomous.DEFAULT_DRIVE_MAX_POWER);
             setMotorPowers(power);
 
             elapsedTime = timer.milliseconds() - startingTime;

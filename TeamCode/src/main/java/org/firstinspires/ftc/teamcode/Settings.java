@@ -66,8 +66,8 @@ public class Settings {
 
     public static class Autonomous {
         public static final double TICKS_PER_REVOLUTION = 537.6;
-        public static final double WHEEL_DIAMETER_MM = 96;
-        public static final double TICKS_PER_MM = TICKS_PER_REVOLUTION / (WHEEL_DIAMETER_MM * Math.PI);
+        public static final double WHEEL_DIAMETER_IN = 3.77952;
+        public static final double TICKS_PER_IN = TICKS_PER_REVOLUTION / (WHEEL_DIAMETER_IN * Math.PI);
 
         public static int DEFAULT_DRIVE_TIMEOUT_MS = 3000;
         public static double DEFAULT_DRIVE_MAX_POWER = 0.5;
