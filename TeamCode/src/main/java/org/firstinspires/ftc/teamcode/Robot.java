@@ -168,7 +168,7 @@ public class Robot {
     public void increaseLinearSlidePosition(double power) {
         if (linearSlideIndex < 2) {
             linearSlideIndex++;
-            runLinearSlideToPosition(Settings.LINEAR_SLIDE_POSITIONS[linearSlideIndex], power);
+            runLinearSlideToPosition(Settings.LinearSlide.POSITIONS.get(linearSlideIndex), power);
         }
 
         if (linearSlideIndex == 1) {
@@ -179,7 +179,7 @@ public class Robot {
     public void decreaseLinearSlidePosition(double power) {
         if (linearSlideIndex > 0) {
             linearSlideIndex--;
-            runLinearSlideToPosition(Settings.LINEAR_SLIDE_POSITIONS[linearSlideIndex], power);
+            runLinearSlideToPosition(Settings.LinearSlide.POSITIONS.get(linearSlideIndex), power);
         }
 
         if (linearSlideIndex == 0) {
@@ -210,18 +210,29 @@ public class Robot {
     public void increaseWristPosition() {
         if (wristIndex < 2) {
             wristIndex++;
-            wrist.setPosition(Settings.WRIST_POSITIONS[wristIndex]);
+            wrist.setPosition(Settings.Wrist.POSITIONS.get(wristIndex));
         }
     }
 
     public void decreaseWristPosition() {
         if (wristIndex > 0) {
             wristIndex--;
-            wrist.setPosition(Settings.WRIST_POSITIONS[wristIndex]);
+            wrist.setPosition(Settings.Wrist.POSITIONS.get(wristIndex));
         }
     }
 
     public int getWristIndex() {
         return wristIndex;
+    }
+
+
+    // DRIVE
+
+    public void driveDistance(double distance) {
+
+    }
+
+    public void driveDistance(double distance, int timeout) {
+
     }
 }

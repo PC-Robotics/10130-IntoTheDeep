@@ -61,12 +61,12 @@ public class MainTeleop extends LinearOpMode {
     }
 
     private void initOpMode() {
-        robot.setTrolleyPosition(Settings.ARM_IN_POSITION);
-        robot.wrist.setPosition(Settings.WRIST_DRIVING_POSITION);
-        robot.bucket.setPosition(Settings.BUCKET_PICKUP_POSITION);
-        robot.claw.setPosition(Settings.CLAW_OPEN_POSITION);
+        robot.setTrolleyPosition(Settings.Trolley.IN_POSITION);
+        robot.wrist.setPosition(Settings.Wrist.RELEASE_POSITION);
+        robot.bucket.setPosition(Settings.Bucket.PICKUP_POSITION);
+        robot.claw.setPosition(Settings.Claw.OPEN_POSITION);
 
-        robot.runLinearSlideToPosition(Settings.LINEAR_SLIDE_STARTING_POSITION, Settings.LINEAR_SLIDE_POWER);
+        robot.runLinearSlideToPosition(Settings.LinearSlide.STARTING_POSITION, Settings.LinearSlide.POWER);
         while (robot.linearSlide.isBusy()) {
             sleep(10);
         }
@@ -111,7 +111,7 @@ public class MainTeleop extends LinearOpMode {
     private void linearSlideControl() {
         if (gamepad1.dpad_up) {
             if (!gamepad1DpadUp) {
-                robot.increaseLinearSlidePosition(Settings.LINEAR_SLIDE_POWER);
+                robot.increaseLinearSlidePosition(Settings.LinearSlide.POWER);
                 gamepad1DpadUp = true;
             }
         } else {
@@ -120,7 +120,7 @@ public class MainTeleop extends LinearOpMode {
 
         if (gamepad1.dpad_down) {
             if (!gamepad1DpadDown) {
-                robot.decreaseLinearSlidePosition(Settings.LINEAR_SLIDE_POWER);
+                robot.decreaseLinearSlidePosition(Settings.LinearSlide.POWER);
                 gamepad1DpadDown = true;
             }
         } else {
@@ -137,7 +137,7 @@ public class MainTeleop extends LinearOpMode {
             newTrolleyPosition += (gamepad1LeftTrigger / 300);
         }
 
-        newTrolleyPosition = clamp(newTrolleyPosition, Settings.ARM_OUT_POSITION, Settings.ARM_IN_POSITION);
+        newTrolleyPosition = clamp(newTrolleyPosition, Settings.Trolley.OUT_POSITION, Settings.Trolley.IN_POSITION);
         robot.setTrolleyPosition(newTrolleyPosition);
     }
 
@@ -164,9 +164,9 @@ public class MainTeleop extends LinearOpMode {
     private void intakeControl() {
         // multiplying by Settings.MAX_INTAKE_POWER normalizes the trigger values to [0, MAX_INTAKE_POWER]
         if (gamepad2RightTrigger != 0) {
-            robot.intake.setPower(gamepad2RightTrigger * Settings.MAX_INTAKE_POWER);
+            robot.intake.setPower(gamepad2RightTrigger * Settings.Intake.MAX_POWER);
         } else if (gamepad2LeftTrigger != 0) {
-            robot.intake.setPower(-(gamepad2LeftTrigger * Settings.MAX_INTAKE_POWER));
+            robot.intake.setPower(-(gamepad2LeftTrigger * Settings.Intake.MAX_POWER));
         } else {
             robot.intake.setPower(0);
         }
@@ -174,19 +174,19 @@ public class MainTeleop extends LinearOpMode {
 
     private void bucketControl() {
         if (gamepad2.triangle) {
-            if (!(robot.linearSlide.getTargetPosition() == Settings.LINEAR_SLIDE_STARTING_POSITION && robot.wrist.getPosition() == Settings.WRIST_RELEASE_POSITION)) {
-                robot.bucket.setPosition(Settings.BUCKET_RELEASE_POSITION);
+            if (!(robot.linearSlide.getTargetPosition() == Settings.LinearSlide.STARTING_POSITION && robot.wrist.getPosition() == Settings.Wrist.RELEASE_POSITION)) {
+                robot.bucket.setPosition(Settings.Bucket.RELEASE_POSITION);
             }
         } else if (gamepad2.cross) {
-            robot.bucket.setPosition(Settings.BUCKET_PICKUP_POSITION);
+            robot.bucket.setPosition(Settings.Bucket.PICKUP_POSITION);
         }
     }
 
     private void clawControl() {
         if (gamepad2.dpad_left) {
-            robot.claw.setPosition(Settings.CLAW_CLOSED_POSITION);
+            robot.claw.setPosition(Settings.Claw.CLOSED_POSITION);
         } else if (gamepad2.dpad_right) {
-            robot.claw.setPosition(Settings.CLAW_OPEN_POSITION);
+            robot.claw.setPosition(Settings.Claw.OPEN_POSITION);
         }
     }
 
