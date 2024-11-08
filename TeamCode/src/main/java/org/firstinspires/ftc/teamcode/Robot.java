@@ -1,16 +1,22 @@
 package org.firstinspires.ftc.teamcode;
 
+import static org.firstinspires.ftc.teamcode.Utility.clamp;
+
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.IMU;
+import com.qualcomm.robotcore.util.ElapsedTime;
+
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
 
 
 public class Robot {
     private LinearOpMode myOpMode = null;   // gain access to methods in the calling OpMode.
+
+    public ElapsedTime timer = new ElapsedTime();
 
     // Define Motor and Servo objects  (Make them private so they can't be accessed externally)
     public DcMotor frontRight = null;
@@ -150,6 +156,13 @@ public class Robot {
         backRight.setPower(power);
     }
 
+    public void setMotorPowers(double frontLeftPower, double backLeftPower, double frontRightPower, double backRightPower) {
+        frontLeft.setPower(frontLeftPower);
+        backLeft.setPower(backLeftPower);
+        frontRight.setPower(frontRightPower);
+        backRight.setPower(backRightPower);
+    }
+
     public void stopMotors() {
         setMotorPowers(0);
     }
@@ -228,11 +241,46 @@ public class Robot {
 
     // DRIVE
 
-    public void driveDistance(double distance) {
-
+    public void driveDistance(double distance_mm) {
+        driveDistance(distance_mm, Settings.Autonomous.DEFAULT_DRIVE_TIMEOUT_MS);
     }
 
-    public void driveDistance(double distance, int timeout) {
+    public void driveDistance(double distance_mm, int timeout) {
+        double startingTime = timer.milliseconds();
+        double elapsedTime = 0;
 
+        double drivePosition = (double) (frontLeft.getCurrentPosition() + frontRight.getCurrentPosition() + backLeft.getCurrentPosition() + backRight.getCurrentPosition()) / (4 * Settings.Autonomous.TICKS_PER_MM);
+        double target = drivePosition + distance_mm;
+        double error = distance_mm;
+        while (Math.abs(error) < Settings.Autonomous.DRIVE_ELIPSON && elapsedTime < timeout && myOpMode.opModeIsActive()) {
+            drivePosition = (double) (frontLeft.getCurrentPosition() + frontRight.getCurrentPosition() + backLeft.getCurrentPosition() + backRight.getCurrentPosition()) / (4 * Settings.Autonomous.TICKS_PER_MM);
+            error = target - drivePosition;
+
+            double power = clamp(Math.abs(error) / distance_mm, Settings.Autonomous.DEFAULT_DRIVE_MIN_POWER, Settings.Autonomous.DEFAULT_DRIVE_MAX_POWER);
+            setMotorPowers(power);
+
+            elapsedTime = timer.milliseconds() - startingTime;
+        }
+    }
+
+    public void turnAbsolute(double angle) {
+        turnAbsolute(angle, Settings.Autonomous.DEFAULT_TURN_TIMEOUT_MS);
+    }
+
+    public void turnAbsolute(double angle, int timeout) {
+        double startingTime = timer.milliseconds();
+        double elapsedTime = 0;
+
+        double target = angle;
+        double error = angle - getHeading();
+        while (Math.abs(error) < Settings.Autonomous.TURN_ELIPSON && elapsedTime < timeout && myOpMode.opModeIsActive()) {
+            double heading = getHeading();
+            error = target - heading;
+
+            double power = clamp(Math.abs(error) / angle, Settings.Autonomous.DEFAULT_TURN_MIN_POWER, Settings.Autonomous.DEFAULT_TURN_MAX_POWER);
+            setMotorPowers(power, power, -power, -power);
+
+            elapsedTime = timer.milliseconds() - startingTime;
+        }
     }
 }
