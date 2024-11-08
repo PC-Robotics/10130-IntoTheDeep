@@ -9,6 +9,7 @@ import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
 
@@ -249,11 +250,11 @@ public class Robot {
 
     // DRIVE
 
-    public void driveDistance(double distance_in) {
-        driveDistance(distance_in, Settings.Autonomous.DEFAULT_DRIVE_TIMEOUT_MS);
+    public void driveDistance(double distance_in, Telemetry telemetry) {
+        driveDistance(distance_in, Settings.Autonomous.DEFAULT_DRIVE_TIMEOUT_MS, telemetry);
     }
 
-    public void driveDistance(double distance_in, int timeout) {
+    public void driveDistance(double distance_in, int timeout, Telemetry telemetry) {
         double startingTime = timer.milliseconds(); // get the current time
         double elapsedTime = 0; // timer creation
 
@@ -281,14 +282,21 @@ public class Robot {
 
             // update the elapsed time
             elapsedTime = timer.milliseconds() - startingTime;
+
+            telemetry.addData("Drive Position", drivePosition);
+            telemetry.addData("Target Position", target);
+            telemetry.addData("Error", error);
+            telemetry.addData("Power", power);
+            telemetry.addData("Elapsed Time", elapsedTime);
+            telemetry.update();
         }
     }
 
-    public void turnAbsolute(double targetAngle_degrees) {
-        turnAbsolute(targetAngle_degrees, Settings.Autonomous.DEFAULT_TURN_TIMEOUT_MS);
+    public void turnAbsolute(double targetAngle_degrees, Telemetry telemetry) {
+        turnAbsolute(targetAngle_degrees, Settings.Autonomous.DEFAULT_TURN_TIMEOUT_MS, telemetry);
     }
 
-    public void turnAbsolute(double targetAngle_degrees, int timeout) {;
+    public void turnAbsolute(double targetAngle_degrees, int timeout, Telemetry telemetry) {;
         double startingTime = timer.milliseconds(); // get the current time
         double elapsedTime = 0; // timer creation
 
@@ -313,6 +321,13 @@ public class Robot {
 
             // update the elapsed time
             elapsedTime = timer.milliseconds() - startingTime;
+
+            telemetry.addData("Heading", getHeading(AngleUnit.DEGREES));
+            telemetry.addData("Target Angle", targetAngle_degrees);
+            telemetry.addData("Error", error);
+            telemetry.addData("Power", power);
+            telemetry.addData("Elapsed Time", elapsedTime);
+            telemetry.update();
         }
     }
 }

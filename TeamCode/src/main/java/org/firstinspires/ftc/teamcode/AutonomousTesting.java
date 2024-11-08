@@ -12,13 +12,13 @@ public class AutonomousTesting extends LinearOpMode {
         waitForStart();
         robot.imu.resetYaw();
 
-        robot.driveDistance(24);
-        robot.turnAbsolute(90);
-        robot.driveDistance(24);
-        robot.turnAbsolute(180);
-        robot.driveDistance(24);
-        robot.turnAbsolute(270);
-        robot.driveDistance(24);
-        robot.turnAbsolute(0);
+        robot.driveDistance(24, telemetry);
+        robot.turnAbsolute(90, telemetry);
+        robot.driveDistance(24, telemetry);
+        robot.turnAbsolute(180, telemetry);
+        robot.driveDistance(24, telemetry);
+        robot.turnAbsolute(270, telemetry);
+        robot.driveDistance(24, telemetry);
+        robot.turnAbsolute(0, telemetry);
     }
 }
