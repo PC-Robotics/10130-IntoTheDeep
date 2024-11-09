@@ -169,7 +169,7 @@ public class Robot {
     }
 
     public double getAverageDrivePosition() {
-        return (double) (frontLeft.getCurrentPosition() + frontRight.getCurrentPosition() + backLeft.getCurrentPosition() + backRight.getCurrentPosition()) / 4;
+        return (double) (frontLeft.getCurrentPosition() + frontRight.getCurrentPosition() + backLeft.getCurrentPosition() + backRight.getCurrentPosition()) / (4 * Settings.Autonomous.TICKS_PER_IN);
     }
 
     public void stopMotors() {
@@ -265,7 +265,7 @@ public class Robot {
         // check if opMode is active (so we can stop the robot)
         // check if the error is less than a certain value (else the robot will have to drive to inifinite presicion)
         // check if the timer hasn't reached the timeout (so the robot doesn't drive forever)
-        while (Math.abs(error) < Settings.Autonomous.DrivePID.ELIPSON && elapsedTime < timeout && myOpMode.opModeIsActive()) {
+        while (Math.abs(error) > Settings.Autonomous.DrivePID.ELIPSON && elapsedTime < timeout && myOpMode.opModeIsActive()) {
             // for every loop, get the current position of the drive and recalculate the error
             drivePosition = getAverageDrivePosition();
             error = target - drivePosition;
@@ -296,7 +296,7 @@ public class Robot {
         turnAbsolute(targetAngle_degrees, Settings.Autonomous.DEFAULT_TURN_TIMEOUT_MS, telemetry);
     }
 
-    public void turnAbsolute(double targetAngle_degrees, int timeout, Telemetry telemetry) {;
+    public void turnAbsolute(double targetAngle_degrees, int timeout, Telemetry telemetry) {
         double startingTime = timer.milliseconds(); // get the current time
         double elapsedTime = 0; // timer creation
 
@@ -306,7 +306,7 @@ public class Robot {
         // check if opMode is active (so we can stop the robot)
         // check if the error is less than a certain value (else the robot will have to turn to inifinite presicion)
         // check if the timer hasn't reached the timeout (so the robot doesn't turn forever)
-        while (Math.abs(error) < Settings.Autonomous.TurnPID.ELIPSON && elapsedTime < timeout && myOpMode.opModeIsActive()) {
+        while (Math.abs(error) > Settings.Autonomous.TurnPID.ELIPSON && elapsedTime < timeout && myOpMode.opModeIsActive()) {
             error = targetAngle_degrees - getHeading(AngleUnit.DEGREES); // recalculate the error
 
             // make sure the power is within the min and max power values (with the clamp function)
