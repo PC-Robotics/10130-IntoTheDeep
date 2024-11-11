@@ -70,7 +70,6 @@ public class MainTeleop extends LinearOpMode {
         while (robot.linearSlide.isBusy()) {
             sleep(10);
         }
-        robot.stopLinearSlide();
     }
 
     public void readController() {
@@ -109,7 +108,22 @@ public class MainTeleop extends LinearOpMode {
     }
 
     private void linearSlideControl() {
-        if (gamepad1.dpad_up) {
+        if (gamepad1.dpad_left || gamepad1.dpad_right) { // fine control
+            if (gamepad1.dpad_left && gamepad1.dpad_right) {
+                robot.releaseSpecimen();
+            } else {
+                int newLinearSlidePosition = robot.linearSlide.getCurrentPosition();
+                if (gamepad1.dpad_left) {
+                    newLinearSlidePosition += 50;
+                } else {
+                    newLinearSlidePosition -= 50;
+                }
+
+                newLinearSlidePosition = clamp(newLinearSlidePosition, Settings.LinearSlide.STARTING_POSITION, Settings.LinearSlide.SECOND_BUCKET_POSITION);
+                robot.runLinearSlideToPosition(newLinearSlidePosition, Settings.LinearSlide.FINE_CONTROL_POWER);
+            }
+
+        } else if (gamepad1.dpad_up) { // run to set positions
             if (!gamepad1DpadUp) {
                 robot.increaseLinearSlidePosition(Settings.LinearSlide.POWER);
                 gamepad1DpadUp = true;
@@ -118,13 +132,17 @@ public class MainTeleop extends LinearOpMode {
             gamepad1DpadUp = false;
         }
 
-        if (gamepad1.dpad_down) {
+        if (gamepad1.dpad_down && !gamepad1.dpad_up) {
             if (!gamepad1DpadDown) {
                 robot.decreaseLinearSlidePosition(Settings.LinearSlide.POWER);
                 gamepad1DpadDown = true;
             }
         } else {
             gamepad1DpadDown = false;
+        }
+
+        if (!robot.linearSlide.isBusy()) {
+            robot.linearSlide.setPower(0.1);
         }
     }
 
@@ -205,6 +223,7 @@ public class MainTeleop extends LinearOpMode {
 
                 .addData("Subsystem Data ", "-----")
                 .addData("Slide Position Index: ", robot.getLinearSlideIndex())
+                .addData("Slide Position", robot.linearSlide.getCurrentPosition())
                 .addData("Wrist Position Index: ", robot.getWristIndex())
                 .addData("Arm Position: ", robot.getTrolleyPosition());
 

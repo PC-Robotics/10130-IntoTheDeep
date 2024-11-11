@@ -12,22 +12,26 @@ public class Settings {
     public static double DEADZONE_THRESHOLD = 0.1;
 
     public static class Trolley {
-        public static double IN_POSITION = 0.658;
-        public static double OUT_POSITION = 0.188;
+        public static double IN_POSITION = 1.0;
+        public static double OUT_POSITION = 0.55;
     }
 
 
     public static class LinearSlide {
         public static double POWER = 0.66;
+        public static double FINE_CONTROL_POWER = 0.33;
 
-        public static int STARTING_POSITION = 0;
+        public static int STARTING_POSITION = 10;
         public static int FIRST_BUCKET_POSITION = 2700;
-        public static int SECOND_BUCKET_POSITION = 4220;
+        public static int SPECIMEN_LOWERED_POSITION = 1375;
+        public static int SPECIMEN_APPROACH_POSITION = 1800;
+        public static int SECOND_BUCKET_POSITION = 4100;
 
         // Immutable list of position presets
         public static final List<Integer> POSITIONS = List.of(
                 STARTING_POSITION,
                 FIRST_BUCKET_POSITION,
+                SPECIMEN_APPROACH_POSITION,
                 SECOND_BUCKET_POSITION
         );
     }
@@ -40,8 +44,8 @@ public class Settings {
 
 
     public static class Wrist {
-        public static double INTAKE_POSITION = 0.8;
-        public static double RELEASE_POSITION = 0.21;
+        public static double INTAKE_POSITION = 0.73;
+        public static double RELEASE_POSITION = 0.0;
         public static double DRIVING_POSITION = 0.38;
 
         // Immutable list of wrist positions
