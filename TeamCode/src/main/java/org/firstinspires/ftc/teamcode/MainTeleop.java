@@ -75,8 +75,8 @@ public class MainTeleop extends LinearOpMode {
     }
 
     public void readController() {
-        straight = applyDeadzone(gamepad1.left_stick_y, Settings.DEADZONE_THRESHOLD);
-        strafe = -applyDeadzone(gamepad1.left_stick_x, Settings.DEADZONE_THRESHOLD);
+        straight = -applyDeadzone(gamepad1.left_stick_y, Settings.DEADZONE_THRESHOLD);
+        strafe = applyDeadzone(gamepad1.left_stick_x, Settings.DEADZONE_THRESHOLD);
         turn = applyDeadzone(gamepad1.right_stick_x, Settings.DEADZONE_THRESHOLD);
 
         gamepad1RightTrigger = applyDeadzone(gamepad1.right_trigger, Settings.DEADZONE_THRESHOLD);
@@ -90,10 +90,10 @@ public class MainTeleop extends LinearOpMode {
 
     private void mecanumDrive() {
         // calculate powers
-        powers[0] = straight + strafe - turn; // front left power
-        powers[1] = straight - strafe - turn; // back left power
-        powers[2] = straight - strafe + turn; // front right power
-        powers[3] = straight + strafe + turn; // back right power
+        powers[0] = straight + strafe + turn; // front left power
+        powers[1] = straight - strafe + turn; // back left power
+        powers[2] = straight - strafe - turn; // front right power
+        powers[3] = straight + strafe - turn; // back right power
 
         // fine control
         if (gamepad1.left_bumper) {

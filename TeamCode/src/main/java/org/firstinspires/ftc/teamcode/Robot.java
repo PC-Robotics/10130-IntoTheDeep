@@ -5,6 +5,7 @@ import static org.firstinspires.ftc.teamcode.Utility.clamp;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.IMU;
@@ -78,10 +79,11 @@ public class Robot {
          *          0: linearSlide
          */
 
-        frontRight = motorInit("frontRight", DcMotor.Direction.FORWARD, DcMotor.ZeroPowerBehavior.BRAKE);
-        frontLeft = motorInit("frontLeft", DcMotor.Direction.REVERSE, DcMotor.ZeroPowerBehavior.BRAKE);
-        backRight = motorInit("backRight", DcMotor.Direction.FORWARD, DcMotor.ZeroPowerBehavior.BRAKE);
-        backLeft = motorInit("backLeft", DcMotor.Direction.REVERSE, DcMotor.ZeroPowerBehavior.BRAKE);
+        frontLeft = motorInit("frontLeft", DcMotor.Direction.FORWARD, DcMotor.ZeroPowerBehavior.BRAKE);
+        backLeft = motorInit("backLeft", DcMotor.Direction.FORWARD, DcMotor.ZeroPowerBehavior.BRAKE);
+        frontRight = motorInit("frontRight", DcMotor.Direction.REVERSE, DcMotor.ZeroPowerBehavior.BRAKE);
+        backRight = motorInit("backRight", DcMotor.Direction.REVERSE, DcMotor.ZeroPowerBehavior.BRAKE);
+
         linearSlide = motorInit("linearSlide", DcMotor.Direction.REVERSE, DcMotor.ZeroPowerBehavior.FLOAT);
         wrist = servoInit("wrist", Servo.Direction.FORWARD);
         intake = CRservoInit("intake", CRServo.Direction.FORWARD);
