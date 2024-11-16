@@ -23,15 +23,16 @@ public class Settings {
 
         public static int STARTING_POSITION = 10;
         public static int FIRST_BUCKET_POSITION = 2700;
+        public static int SECOND_BUCKET_POSITION = 4100;
+
         public static int SPECIMEN_LOWERED_POSITION = 1375;
         public static int SPECIMEN_APPROACH_POSITION = 1800;
-        public static int SECOND_BUCKET_POSITION = 4100;
 
         // Immutable list of position presets
         public static final List<Integer> POSITIONS = List.of(
                 STARTING_POSITION,
-                FIRST_BUCKET_POSITION,
                 SPECIMEN_APPROACH_POSITION,
+                FIRST_BUCKET_POSITION,
                 SECOND_BUCKET_POSITION
         );
     }
@@ -44,9 +45,9 @@ public class Settings {
 
 
     public static class Wrist {
-        public static double INTAKE_POSITION = 0.73;
+        public static double INTAKE_POSITION = 0.7;
         public static double RELEASE_POSITION = 0.0;
-        public static double DRIVING_POSITION = 0.38;
+        public static double DRIVING_POSITION = 0.22;
 
         // Immutable list of wrist positions
         public static final List<Double> POSITIONS = List.of(

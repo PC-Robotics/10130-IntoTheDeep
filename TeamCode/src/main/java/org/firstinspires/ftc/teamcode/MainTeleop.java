@@ -6,27 +6,28 @@ import static org.firstinspires.ftc.teamcode.Utility.normalizePowers;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.DcMotor;
 
 /**
  * Controller 1 - Driver
  * joysticks - mecanum drive
  * bumper left - fine control (half sped)
- * dpad up - linear slide go up
- * dpad down - linear slide go down
- * dpad left - linear slide manual down
- * dpad right - linear slide manual up
- * trigger right - arm go out
- * trigger left - arm go in
+ * options - reset heading
+ * trigger left - trolley go in
+ * trigger right - trolley go out
+ * square - claw close
+ * circle - claw open
 
  * Controller 2 - Operator
- * bumper left - wrist go left
- * bumper right - wrist go right
+ * bumper left - wrist go "in"
+ * bumper right - wrist go "out"
  * trigger right - intake spin
  * trigger left - intake spin backwards
  * triangle - bucket release
  * cross - bucket pickup
- * dpad left - claw close
- * dpad right - claw open
+ * dpadUp - slide index up
+ * dpadDown - slide index down
+ * left joystick y - slide up down manual control
  */
 
 @TeleOp(name="Main Teleop Program", group="Linear OpMode")
@@ -37,8 +38,8 @@ public class MainTeleop extends LinearOpMode {
     private double[] powers = new double[4];
     private double straight, turn, strafe, heading;
 
-    private double gamepad1LeftTrigger, gamepad1RightTrigger, gamepad2LeftTrigger, gamepad2RightTrigger;
-    private boolean gamepad1DpadUp = false, gamepad1DpadDown = false, gamepad2LeftBumper = false, gamepad2RightBumper = false;
+    private double gamepad1LeftTrigger, gamepad1RightTrigger, gamepad2LeftTrigger, gamepad2RightTrigger, gamepad2RightJoystickY;
+    private boolean gamepad2LeftBumper = false, gamepad2RightBumper = false, gamepad2DpadUp = false, gamepad2DpadDown = false, linearSlideInManualMode = false;
     public void runOpMode() {
         robot.init();
         waitForStart();
@@ -64,7 +65,7 @@ public class MainTeleop extends LinearOpMode {
 
     private void initOpMode() {
         robot.setTrolleyPosition(Settings.Trolley.IN_POSITION);
-        robot.wrist.setPosition(Settings.Wrist.RELEASE_POSITION);
+        robot.wrist.setPosition(Settings.Wrist.DRIVING_POSITION);
         robot.bucket.setPosition(Settings.Bucket.PICKUP_POSITION);
         robot.claw.setPosition(Settings.Claw.OPEN_POSITION);
 
@@ -83,6 +84,11 @@ public class MainTeleop extends LinearOpMode {
         gamepad1LeftTrigger = applyDeadzone(gamepad1.left_trigger, Settings.DEADZONE_THRESHOLD);
         gamepad2LeftTrigger = applyDeadzone(gamepad2.left_trigger, Settings.DEADZONE_THRESHOLD);
         gamepad2RightTrigger = applyDeadzone(gamepad2.right_trigger, Settings.DEADZONE_THRESHOLD);
+        gamepad2RightJoystickY = -applyDeadzone(gamepad2.right_stick_y, Settings.DEADZONE_THRESHOLD);
+
+        if (gamepad1.options) {
+            robot.imu.resetYaw();
+        }
     }
     private void readSensors() {
         heading = robot.getHeading(); // in radians
@@ -107,32 +113,35 @@ public class MainTeleop extends LinearOpMode {
     }
 
     private void linearSlideControl() {
-        if (gamepad1.dpad_left || gamepad1.dpad_right) { // fine control
-            int newLinearSlidePosition = robot.linearSlide.getCurrentPosition();
-            if (gamepad1.dpad_left) {
-                newLinearSlidePosition += 50;
-            } else {
-                newLinearSlidePosition -= 50;
+        if (gamepad2RightJoystickY != 0) { // fine control
+            if (!linearSlideInManualMode) {
+                robot.linearSlide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             }
-
-            newLinearSlidePosition = clamp(newLinearSlidePosition, Settings.LinearSlide.STARTING_POSITION, Settings.LinearSlide.SECOND_BUCKET_POSITION);
-            robot.runLinearSlideToPosition(newLinearSlidePosition, Settings.LinearSlide.FINE_CONTROL_POWER);
-
-        } else if (gamepad1.dpad_up) { // run to set positions
-            if (!gamepad1DpadUp) {
-                robot.increaseLinearSlidePosition(Settings.LinearSlide.POWER);
-                gamepad1DpadUp = true;
-            }
+            linearSlideInManualMode = true;
+            robot.linearSlide.setPower(gamepad2RightJoystickY / 2);
         } else {
-            gamepad1DpadUp = false;
+            if (linearSlideInManualMode) {
+                linearSlideInManualMode = false;
+                robot.linearSlide.setPower(0.05);
+                robot.linearSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            }
 
-            if (gamepad1.dpad_down) {
-                if (!gamepad1DpadDown) {
-                    robot.decreaseLinearSlidePosition(Settings.LinearSlide.POWER);
-                    gamepad1DpadDown = true;
+            if (gamepad2.dpad_up) { // run to set positions
+                if (!gamepad2DpadUp) {
+                    robot.increaseLinearSlidePosition(Settings.LinearSlide.POWER);
+                    gamepad2DpadUp = true;
                 }
             } else {
-                gamepad1DpadDown = false;
+                gamepad2DpadUp = false;
+
+                if (gamepad2.dpad_down) {
+                    if (!gamepad2DpadDown) {
+                        robot.decreaseLinearSlidePosition(Settings.LinearSlide.POWER);
+                        gamepad2DpadDown = true;
+                    }
+                } else {
+                    gamepad2DpadDown = false;
+                }
             }
         }
     }
@@ -192,18 +201,19 @@ public class MainTeleop extends LinearOpMode {
     }
 
     private void clawControl() {
-        if (gamepad2.dpad_left) {
+        if (gamepad1.square) {
             robot.claw.setPosition(Settings.Claw.CLOSED_POSITION);
-        } else if (gamepad2.dpad_right) {
+        } else if (gamepad1.circle) {
             robot.claw.setPosition(Settings.Claw.OPEN_POSITION);
         }
     }
 
     private void updateTelemetryData() {
         telemetry.addData("Controller Data ", "-----")
-                .addData("Left Pad Y: ", straight)
-                .addData("Left Pad X: ", strafe)
-                .addData("Right Pad X: ", turn)
+                .addData("Gamepad 1 Left Pad Y: ", straight)
+                .addData("Gamepad 1 Left Pad X: ", strafe)
+                .addData("Gamepad 1 Right Pad X: ", turn)
+                .addData("Gamepad 2 Right Pad Y: ", gamepad2RightJoystickY)
 
                 .addData("Drive Data ", "-----")
                 .addData("Front Left Power: ", powers[0])
