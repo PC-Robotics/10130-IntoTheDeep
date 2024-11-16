@@ -23,7 +23,7 @@ public class TeleopFieldCentricDrive extends LinearOpMode {
         robot.imu.resetYaw();
 
         while (opModeIsActive()) {
-            if (gamepad1.start) {
+            if (gamepad1.options) {
                 robot.imu.resetYaw();
             }
 
@@ -34,9 +34,9 @@ public class TeleopFieldCentricDrive extends LinearOpMode {
     }
 
     private void readSensors() {
-        straight = applyDeadzone(gamepad1.left_stick_y, DEADZONE_THRESHOLD);
+        straight = -applyDeadzone(gamepad1.left_stick_y, DEADZONE_THRESHOLD);
         turn = applyDeadzone(gamepad1.right_stick_x, DEADZONE_THRESHOLD);
-        strafe = applyDeadzone(-gamepad1.left_stick_x, DEADZONE_THRESHOLD); // invert pad left x
+        strafe = applyDeadzone(gamepad1.left_stick_x, DEADZONE_THRESHOLD); // invert pad left x
         heading = robot.getHeading(); // in radians
     }
 

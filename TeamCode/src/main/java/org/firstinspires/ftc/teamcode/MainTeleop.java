@@ -89,18 +89,15 @@ public class MainTeleop extends LinearOpMode {
     }
 
     private void mecanumDrive() {
-        // calculate powers
-        powers[0] = straight + strafe + turn; // front left power
-        powers[1] = straight - strafe + turn; // back left power
-        powers[2] = straight - strafe - turn; // front right power
-        powers[3] = straight + strafe - turn; // back right power
+        double rotY = strafe * Math.sin(-heading) + straight * Math.cos(-heading);
+        double rotX = strafe * Math.cos(-heading) - straight * Math.sin(-heading);
 
-        // fine control
-        if (gamepad1.left_bumper) {
-            for (int i = 0; i < powers.length; i++) {
-                powers[i] /= 2;
-            }
-        }
+
+        // calculate powers
+        powers[0] = rotY + rotX + turn; // front left power
+        powers[1] = rotY - rotX + turn; // back left power
+        powers[2] = rotY - rotX - turn; // front right power
+        powers[3] = rotY + rotX - turn; // back right power
 
         // powers array is updated inside this method
         normalizePowers(powers);
