@@ -54,7 +54,7 @@ public final class Utility {
      * @param <T> the type of the value
      * @return the clamped value
      */
-    static <T extends Comparable<T>> T clamp(T value, T min, T max) {
+    public static <T extends Comparable<T>> T clamp(T value, T min, T max) {
         if (value.compareTo(min) < 0) {
             return min;
         } else if (value.compareTo(max) > 0) {
