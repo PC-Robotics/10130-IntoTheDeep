@@ -12,11 +12,10 @@ public final class Utility {
      * Normalize each value in the powers array if any of the values are greater than 1.
      * This makes sure that the motors won't receive a |value| > 1.0
      * @param powers the array powers for all motors
-     * @return the powers array but normalized to a range of [-1.0, 1.0]
+     * modifies the array in place (thanks java)
      */
-    public static double[] normalizePowers(double[] powers) {
+    public static void normalizePowers(double[] powers) {
         // no need for check for 0 length array since length is given
-        // mind max
         double max = Math.abs(powers[0]);
         for (int i = 1; i < powers.length; i++) {
             max = Math.max(max, Math.abs(powers[i]));
@@ -28,7 +27,6 @@ public final class Utility {
                 powers[i] /= max;
             }
         }
-        return powers;
     }
 
 
@@ -53,8 +51,8 @@ public final class Utility {
      * @param value the value to clamp
      * @param min the minimum value
      * @param max the maximum value
-     * @return the clamped value
      * @param <T> the type of the value
+     * @return the clamped value
      */
     static <T extends Comparable<T>> T clamp(T value, T min, T max) {
         if (value.compareTo(min) < 0) {

@@ -103,7 +103,7 @@ public class MainTeleop extends LinearOpMode {
         }
 
         // powers array is updated inside this method
-        powers = normalizePowers(powers);
+        normalizePowers(powers);
 
         // set powers to motors
         robot.setMotorPowers(powers);

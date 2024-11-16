@@ -44,7 +44,7 @@ public class TeleopMecanumDrive extends LinearOpMode {
         powers[3] = straight - turn + strafe; // back right power
 
         // powers array is updated inside this method
-        powers = normalizePowers(powers);
+        normalizePowers(powers);
 
         // set powers to motors
         robot.frontLeft.setPower(powers[0]);
