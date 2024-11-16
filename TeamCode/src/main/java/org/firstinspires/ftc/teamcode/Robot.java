@@ -103,7 +103,7 @@ public class Robot {
         IMU.Parameters parameters = new IMU.Parameters(
                 new RevHubOrientationOnRobot(
                         RevHubOrientationOnRobot.LogoFacingDirection.UP,
-                        RevHubOrientationOnRobot.UsbFacingDirection.LEFT
+                        RevHubOrientationOnRobot.UsbFacingDirection.RIGHT // its backwards
                 )
         );
         imu.initialize(parameters);

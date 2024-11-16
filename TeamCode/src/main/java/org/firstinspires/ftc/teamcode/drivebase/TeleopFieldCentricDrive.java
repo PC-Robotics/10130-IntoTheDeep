@@ -1,15 +1,15 @@
 package org.firstinspires.ftc.teamcode.drivebase;
 
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-
 import static org.firstinspires.ftc.teamcode.Utility.applyDeadzone;
 import static org.firstinspires.ftc.teamcode.Utility.normalizePowers;
 
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+
 import org.firstinspires.ftc.teamcode.Robot;
 
-@TeleOp(name="Mecanum Drive", group="Drivebase")
-public class TeleopMecanumDrive extends LinearOpMode {
+@TeleOp(name="Field-Centric Drive", group="Drivebase")
+public class TeleopFieldCentricDrive extends LinearOpMode {
     private static final double DEADZONE_THRESHOLD = 0.1;
 
     Robot robot = new Robot(this);
@@ -23,8 +23,12 @@ public class TeleopMecanumDrive extends LinearOpMode {
         robot.imu.resetYaw();
 
         while (opModeIsActive()) {
+            if (gamepad1.options) {
+                robot.imu.resetYaw();
+            }
+
             readSensors();
-            mecanumDrive(straight, turn, strafe);
+            FieldCentricDrive();
             updateTelemetryData();
         }
     }
@@ -36,12 +40,19 @@ public class TeleopMecanumDrive extends LinearOpMode {
         heading = robot.getHeading(); // in radians
     }
 
-    private void mecanumDrive(double straight, double turn, double strafe) {
+    /**
+     * @see <a href="https://gm0.org/en/latest/docs/software/tutorials/mecanum-drive.html">gm0 guide</a>
+     */
+    private void FieldCentricDrive() {
+        double rotY = strafe * Math.sin(-heading) + straight * Math.cos(-heading);
+        double rotX = strafe * Math.cos(-heading) - straight * Math.sin(-heading);
+
+
         // calculate powers
-        powers[0] = straight + strafe + turn; // front left power
-        powers[1] = straight - strafe + turn; // back left power
-        powers[2] = straight - strafe - turn; // front right power
-        powers[3] = straight + strafe - turn; // back right power
+        powers[0] = rotY + rotX + turn; // front left power
+        powers[1] = rotY - rotX + turn; // back left power
+        powers[2] = rotY - rotX - turn; // front right power
+        powers[3] = rotY + rotX - turn; // back right power
 
         // powers array is updated inside this method
         normalizePowers(powers);
