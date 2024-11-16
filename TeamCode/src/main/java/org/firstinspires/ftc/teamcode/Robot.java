@@ -100,12 +100,13 @@ public class Robot {
     private void initSensors() {
         // Initialize the IMU
         imu = myOpMode.hardwareMap.get(IMU.class, "imu");
-        IMU.Parameters myIMUParameters = new IMU.Parameters(
+        IMU.Parameters parameters = new IMU.Parameters(
                 new RevHubOrientationOnRobot(
                         RevHubOrientationOnRobot.LogoFacingDirection.UP,
                         RevHubOrientationOnRobot.UsbFacingDirection.LEFT
                 )
         );
+        imu.initialize(parameters);
 
         // telemetry
         myOpMode.telemetry.addData("> (INFO) - ", "Sensors Initialized");
