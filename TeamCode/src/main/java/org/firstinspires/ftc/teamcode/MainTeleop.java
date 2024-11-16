@@ -72,7 +72,6 @@ public class MainTeleop extends LinearOpMode {
         while (robot.linearSlide.isBusy()) {
             sleep(10);
         }
-        robot.stopLinearSlide();
     }
 
     public void readController() {
@@ -138,10 +137,6 @@ public class MainTeleop extends LinearOpMode {
             } else {
                 gamepad1DpadDown = false;
             }
-        }
-
-        if (!robot.linearSlide.isBusy()) {
-            robot.stopLinearSlide();
         }
     }
 
@@ -222,6 +217,7 @@ public class MainTeleop extends LinearOpMode {
 
                 .addData("Subsystem Data ", "-----")
                 .addData("Slide Position Index: ", robot.getLinearSlideIndex())
+                .addData("Slide Position", robot.linearSlide.getCurrentPosition())
                 .addData("Wrist Position Index: ", robot.getWristIndex())
                 .addData("Arm Position: ", robot.getTrolleyPosition());
 

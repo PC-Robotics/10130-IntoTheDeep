@@ -1,16 +1,23 @@
 package org.firstinspires.ftc.teamcode;
 
+import static org.firstinspires.ftc.teamcode.Utility.clamp;
+
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.IMU;
+import com.qualcomm.robotcore.util.ElapsedTime;
+
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
 
 
 public class Robot {
     private LinearOpMode myOpMode = null;   // gain access to methods in the calling OpMode.
+
+    public ElapsedTime timer = new ElapsedTime();
 
     // Define Motor and Servo objects  (Make them private so they can't be accessed externally)
     public DcMotor frontRight = null;
@@ -105,7 +112,11 @@ public class Robot {
 
     // get the heading of the robot in radians
     public double getHeading() {
-        return imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS);
+        return getHeading(AngleUnit.RADIANS);
+    }
+
+    public double getHeading(AngleUnit unit) {
+        return imu.getRobotYawPitchRollAngles().getYaw(unit);
     }
 
 
@@ -150,8 +161,51 @@ public class Robot {
         backRight.setPower(power);
     }
 
+    public void setMotorPowers(double frontLeftPower, double backLeftPower, double frontRightPower, double backRightPower) {
+        frontLeft.setPower(frontLeftPower);
+        backLeft.setPower(backLeftPower);
+        frontRight.setPower(frontRightPower);
+        backRight.setPower(backRightPower);
+    }
+
+    public double getAverageDrivePosition() {
+        return (double) (frontLeft.getCurrentPosition() + frontRight.getCurrentPosition() + backLeft.getCurrentPosition() + backRight.getCurrentPosition()) / (4 * Settings.Autonomous.TICKS_PER_IN);
+    }
+
     public void stopMotors() {
         setMotorPowers(0);
+    }
+
+    public void closeClaw() {
+        claw.setPosition(Settings.Claw.CLOSED_POSITION);
+    }
+
+    public void openClaw() {
+        claw.setPosition(Settings.Claw.CLOSED_POSITION);
+    }
+
+    public void pickupBucket () {
+        bucket.setPosition(Settings.Bucket.PICKUP_POSITION);
+    }
+
+    public void releaseBucket () {
+        bucket.setPosition(Settings.Bucket.RELEASE_POSITION);
+    }
+
+    public void intake() {
+        intake.setPower(Settings.Intake.MAX_POWER);
+    }
+
+    public void outtake() {
+        intake.setPower(-Settings.Intake.MAX_POWER);
+    }
+
+    public void stopIntake() {
+        intake.setPower(0);
+    }
+
+    public void trolleyIn() {
+        setTrolleyPosition(Settings.Trolley.IN_POSITION);
     }
 
     public void setTrolleyPosition(double position) {
@@ -166,7 +220,7 @@ public class Robot {
     private int linearSlideIndex = 0;
 
     public void increaseLinearSlidePosition(double power) {
-        if (linearSlideIndex < 2) {
+        if (linearSlideIndex < Settings.LinearSlide.POSITIONS.length() - 1) {
             linearSlideIndex++;
             runLinearSlideToPosition(Settings.LinearSlide.POSITIONS.get(linearSlideIndex), power);
         }
@@ -193,6 +247,10 @@ public class Robot {
 
     // HELPERS
 
+    public void runLinearSlideToPosition(int position) {
+        runLinearSlideToPosition(position, Settings.LinearSlide.POWER);
+    }
+
     public void runLinearSlideToPosition(int position, double power) {
         linearSlide.setTargetPosition(position);
         linearSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
@@ -202,6 +260,26 @@ public class Robot {
     public void stopLinearSlide() {
         linearSlide.setPower(0);
         linearSlide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+    }
+
+    public void releaseSpecimen() {
+        runLinearSlideToPosition(Settings.LinearSlide.SPECIMEN_APPROACH_POSITION);
+        while (linearSlide.isBusy()) {
+            // do nothing
+        }
+
+        runLinearSlideToPosition(Settings.LinearSlide.SPECIMEN_LOWERED_POSITION);
+        while (linearSlide.isBusy()) {
+            // do nothing
+        }
+
+        openClaw();
+        myOpMode.sleep(500);
+
+        driveDistance(-10);
+
+        runLinearSlideToPosition(Settings.LinearSlide.STARTING_POSITION);
+        linearSlideIndex = 0;
     }
 
 
@@ -228,11 +306,85 @@ public class Robot {
 
     // DRIVE
 
-    public void driveDistance(double distance) {
-
+    public void driveDistance(double distance_in) {
+        driveDistance(distance_in, Settings.Autonomous.DEFAULT_DRIVE_TIMEOUT_MS);
     }
 
-    public void driveDistance(double distance, int timeout) {
+    public void driveDistance(double distance_in, int timeout) {
+        double startingTime = timer.milliseconds(); // get the current time
+        double elapsedTime = 0; // timer creation
 
+        double drivePosition = getAverageDrivePosition(); // get the current position of the drive
+        double target = drivePosition - distance_in; // set the target position (current position + distance you want to travel)
+        double error = -distance_in; // Error - the distance between the current position and the target position (how much we have left to travel)
+
+        // check if opMode is active (so we can stop the robot)
+        // check if the error is less than a certain value (else the robot will have to drive to inifinite presicion)
+        // check if the timer hasn't reached the timeout (so the robot doesn't drive forever)
+        while (Math.abs(error) > Settings.Autonomous.DrivePID.ELIPSON && elapsedTime < timeout && myOpMode.opModeIsActive()) {
+            // for every loop, get the current position of the drive and recalculate the error
+            drivePosition = getAverageDrivePosition();
+            error = target - drivePosition;
+
+            // make sure the power is within the min and max power values (with the clamp function)
+            double power = clamp(
+                    (Math.abs(error) * Settings.Autonomous.DrivePID.kP) / 100,
+                    Settings.Autonomous.DEFAULT_DRIVE_MIN_POWER,
+                    Settings.Autonomous.DEFAULT_DRIVE_MAX_POWER
+            );
+
+            // set the motor powers to the power value
+            setMotorPowers(-power);
+
+            // update the elapsed time
+            elapsedTime = timer.milliseconds() - startingTime;
+
+            myOpMode.telemetry.addData("Heading", getHeading(AngleUnit.DEGREES));
+            myOpMode.telemetry.addData("Drive Position", drivePosition);
+            myOpMode.telemetry.addData("Target Position", target);
+            myOpMode.telemetry.addData("Error", error);
+            myOpMode.telemetry.addData("Power", power);
+            myOpMode.telemetry.addData("Elapsed Time", elapsedTime);
+            myOpMode.telemetry.update();
+        }
+    }
+
+    public void turnAbsolute(double targetAngle_degrees) {
+        turnAbsolute(targetAngle_degrees, Settings.Autonomous.DEFAULT_TURN_TIMEOUT_MS);
+    }
+
+    public void turnAbsolute(double targetAngle_degrees, int timeout) {
+        double startingTime = timer.milliseconds(); // get the current time
+        double elapsedTime = 0; // timer creation
+
+        // since we are turning absolute, our target _is_ the parameter that we pass in.
+        double error = targetAngle_degrees - getHeading(AngleUnit.DEGREES); // Error - the difference between the target angle and the current angle (how much we have left to turn)
+
+        // check if opMode is active (so we can stop the robot)
+        // check if the error is less than a certain value (else the robot will have to turn to inifinite presicion)
+        // check if the timer hasn't reached the timeout (so the robot doesn't turn forever)
+        while (Math.abs(error) > Settings.Autonomous.TurnPID.ELIPSON && elapsedTime < timeout && myOpMode.opModeIsActive()) {
+            error = targetAngle_degrees - getHeading(AngleUnit.DEGREES); // recalculate the error
+
+            // make sure the power is within the min and max power values (with the clamp function)
+            double power = clamp(
+                    (Math.abs(error) * Settings.Autonomous.TurnPID.kP) / 100,
+                    Settings.Autonomous.DEFAULT_TURN_MIN_POWER,
+                    Settings.Autonomous.DEFAULT_TURN_MAX_POWER
+            );
+
+            // set the motor powers to the power value
+            setMotorPowers(power, power, -power, -power);
+
+            // update the elapsed time
+            elapsedTime = timer.milliseconds() - startingTime;
+
+            myOpMode.telemetry.addData("Target Angle", targetAngle_degrees);
+            myOpMode.telemetry.addData("Error", error);
+            myOpMode.telemetry.addData("Power", power);
+            myOpMode.telemetry.addData("Elapsed Time", elapsedTime);
+            myOpMode.telemetry.addData("Heading", getHeading(AngleUnit.DEGREES));
+            myOpMode.telemetry.update();
+        }
     }
 }
