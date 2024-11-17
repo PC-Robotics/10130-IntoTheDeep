@@ -30,7 +30,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
  * left joystick y - slide up down manual control
  */
 
-@TeleOp(name="Main Teleop Program", group="Linear OpMode")
+@TeleOp(name="Main Teleop", group=" Main")
 // TODO - figure out subsystems and seperate drive.
 public class MainTeleop extends LinearOpMode {
     Robot robot = new Robot(this);
