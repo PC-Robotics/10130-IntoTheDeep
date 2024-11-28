@@ -65,7 +65,7 @@ public class Settings {
 
 
     public static class Intake {
-        public static double MAX_POWER = 0.33;
+        public static double MAX_POWER = 0.5;
     }
 
 

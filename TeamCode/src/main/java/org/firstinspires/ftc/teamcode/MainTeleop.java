@@ -8,6 +8,8 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+
 /**
  * Controller 1 - Driver
  * joysticks - mecanum drive
@@ -34,8 +36,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 // TODO - figure out subsystems and seperate drive.
 public class MainTeleop extends LinearOpMode {
     Robot robot = new Robot(this);
-
-    private double[] powers = new double[4];
+    
     private double straight, turn, strafe, heading;
 
     private double gamepad1LeftTrigger, gamepad1RightTrigger, gamepad2LeftTrigger, gamepad2RightTrigger, gamepad2RightJoystickY;
@@ -45,34 +46,28 @@ public class MainTeleop extends LinearOpMode {
         waitForStart();
         robot.imu.resetYaw();
 
-        initOpMode();
+        startingPositions();
 
         while (opModeIsActive()) {
             readController();
             readSensors();
 
-            mecanumDrive();
+            robot.driveBase.fieldCentricDrive(straight, strafe, turn, heading, gamepad1.left_bumper);
             linearSlideControl();
             trolleyControl();
             wristControl();
             intakeControl();
             bucketControl();
             clawControl();
-
-            updateTelemetryData();
         }
     }
 
-    private void initOpMode() {
-        robot.setTrolleyPosition(Settings.Trolley.IN_POSITION);
-        robot.wrist.setPosition(Settings.Wrist.DRIVING_POSITION);
-        robot.bucket.setPosition(Settings.Bucket.PICKUP_POSITION);
-        robot.claw.setPosition(Settings.Claw.OPEN_POSITION);
-
-        robot.runLinearSlideToPosition(Settings.LinearSlide.STARTING_POSITION, Settings.LinearSlide.POWER);
-        while (robot.linearSlide.isBusy()) {
-            sleep(10);
-        }
+    private void startingPositions() {
+        robot.trolley.start();
+        robot.wrist.start();
+        robot.bucket.start();
+        robot.claw.start();
+        robot.linearSlide.start();
     }
 
     public void readController() {
@@ -91,52 +86,50 @@ public class MainTeleop extends LinearOpMode {
         }
     }
     private void readSensors() {
-        heading = robot.getHeading(); // in radians
-    }
-
-    private void mecanumDrive() {
-        double rotY = strafe * Math.sin(-heading) + straight * Math.cos(-heading);
-        double rotX = strafe * Math.cos(-heading) - straight * Math.sin(-heading);
-
-
-        // calculate powers
-        powers[0] = rotY + rotX + turn; // front left power
-        powers[1] = rotY - rotX + turn; // back left power
-        powers[2] = rotY - rotX - turn; // front right power
-        powers[3] = rotY + rotX - turn; // back right power
-
-        // powers array is updated inside this method
-        normalizePowers(powers);
-
-        // set powers to motors
-        robot.setMotorPowers(powers);
+        heading = robot.imu.getHeading(AngleUnit.RADIANS);
     }
 
     private void linearSlideControl() {
-        if (gamepad2RightJoystickY != 0) { // fine control
+        // are we in manual control mode?
+        if (gamepad2RightJoystickY != 0) {
+            // if we just started manual control this cycle, linearSlideInManualMode will be false
             if (!linearSlideInManualMode) {
-                robot.linearSlide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            }
-            linearSlideInManualMode = true;
-            robot.linearSlide.setPower(gamepad2RightJoystickY / 2);
-        } else {
-            if (linearSlideInManualMode) {
-                linearSlideInManualMode = false;
-                robot.linearSlide.setPower(0.05);
-                robot.linearSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                // this means we just started manual control, so we need to set the mode to run without position
+                robot.linearSlide.linearSlide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+                // and set this to true so we don't change the mode over and over again
+                linearSlideInManualMode = true;
             }
 
-            if (gamepad2.dpad_up) { // run to set positions
-                if (!gamepad2DpadUp) {
-                    robot.increaseLinearSlidePosition(Settings.LinearSlide.POWER);
-                    gamepad2DpadUp = true;
+            // set the power to the joystick value
+            robot.linearSlide.linearSlide.setPower(gamepad2RightJoystickY / 2); // half speed for fine control
+        } else { // now we're not in manual mode
+            // if we're not pressing anything at all, stop the motor with some feedforward
+            if (!gamepad2.dpad_up && !gamepad2.dpad_down) {
+                robot.linearSlide.stopFeedForward();
+            } else { // so we ARE pressing something
+                // if we just started position control this cycle, linearSlideInManualMode will be true
+                if (linearSlideInManualMode) {
+                    // this means we just started position control, so we need to set the mode to run to position
+                    robot.linearSlide.linearSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                    // and set this to false so we don't change the mode over and over again
+                    linearSlideInManualMode = false;
                 }
-            } else {
-                gamepad2DpadUp = false;
 
-                if (gamepad2.dpad_down) {
-                    if (!gamepad2DpadDown) {
-                        robot.decreaseLinearSlidePosition(Settings.LinearSlide.POWER);
+                // if we're pressing dpad up, increase the position index
+                if (gamepad2.dpad_up) {
+                    if (!gamepad2DpadUp) { // rising edge detection (see game manual 0)
+                        robot.linearSlide.increasePosition(Settings.LinearSlide.POWER);
+                        gamepad2DpadUp = true;
+                    }
+                } else {
+                    gamepad2DpadUp = false;
+                }
+
+                // if we're pressing dpad down, decrease the position index
+                // but dpad up takes priority so we don't consider dpad down if dpad up is pressed
+                if (gamepad2.dpad_down && !gamepad2.dpad_up) {
+                    if (!gamepad2DpadDown) { // rising edge detection (see game manual 0)
+                        robot.linearSlide.decreasePosition(Settings.LinearSlide.POWER);
                         gamepad2DpadDown = true;
                     }
                 } else {
@@ -147,7 +140,7 @@ public class MainTeleop extends LinearOpMode {
     }
 
     private void trolleyControl() {
-        double newTrolleyPosition = robot.getTrolleyPosition();
+        double newTrolleyPosition = robot.trolley.getPosition();
 
         if (gamepad1RightTrigger != 0) {
             newTrolleyPosition -= (gamepad1RightTrigger / 300);
@@ -156,13 +149,13 @@ public class MainTeleop extends LinearOpMode {
         }
 
         newTrolleyPosition = clamp(newTrolleyPosition, Settings.Trolley.OUT_POSITION, Settings.Trolley.IN_POSITION);
-        robot.setTrolleyPosition(newTrolleyPosition);
+        robot.trolley.setPosition(newTrolleyPosition);
     }
 
     private void wristControl() {
         if (gamepad2.left_bumper) {
             if (!gamepad2LeftBumper) {
-                robot.increaseWristPosition();
+                robot.wrist.moveTowardsPickup();
                 gamepad2LeftBumper = true;
             }
         } else {
@@ -171,7 +164,7 @@ public class MainTeleop extends LinearOpMode {
 
         if (gamepad2.right_bumper) {
             if (!gamepad2RightBumper) {
-                robot.decreaseWristPosition();
+                robot.wrist.moveTowardsRelease();
                 gamepad2RightBumper = true;
             }
         } else {
@@ -180,54 +173,32 @@ public class MainTeleop extends LinearOpMode {
     }
 
     private void intakeControl() {
-        // multiplying by Settings.MAX_INTAKE_POWER normalizes the trigger values to [0, MAX_INTAKE_POWER]
+        // since the triggers are in the range [0, 1), we can multiply them by the max power to get a percentage of the max power
         if (gamepad2RightTrigger != 0) {
-            robot.intake.setPower(gamepad2RightTrigger * Settings.Intake.MAX_POWER);
+            robot.intake.intake(gamepad2RightTrigger * Settings.Intake.MAX_POWER); // intake the sample
         } else if (gamepad2LeftTrigger != 0) {
-            robot.intake.setPower(-(gamepad2LeftTrigger * Settings.Intake.MAX_POWER));
+            robot.intake.outtake(gamepad2LeftTrigger * Settings.Intake.MAX_POWER); // outtake the sample
         } else {
-            robot.intake.setPower(0);
+            robot.intake.stop();
         }
     }
 
     private void bucketControl() {
         if (gamepad2.triangle) {
-            if (!(robot.linearSlide.getTargetPosition() == Settings.LinearSlide.STARTING_POSITION && robot.wrist.getPosition() == Settings.Wrist.RELEASE_POSITION)) {
-                robot.bucket.setPosition(Settings.Bucket.RELEASE_POSITION);
+            if (robot.linearSlide.positionIndex == 0 && robot.wrist.positionIndex == 2) {
+                robot.wrist.moveTowardsPickup();
+                robot.bucket.release();
             }
         } else if (gamepad2.cross) {
-            robot.bucket.setPosition(Settings.Bucket.PICKUP_POSITION);
+            robot.bucket.pickup();
         }
     }
 
     private void clawControl() {
         if (gamepad1.square) {
-            robot.claw.setPosition(Settings.Claw.CLOSED_POSITION);
+            robot.claw.close();
         } else if (gamepad1.circle) {
-            robot.claw.setPosition(Settings.Claw.OPEN_POSITION);
+            robot.claw.open();
         }
-    }
-
-    private void updateTelemetryData() {
-        telemetry.addData("Controller Data ", "-----")
-                .addData("Gamepad 1 Left Pad Y: ", straight)
-                .addData("Gamepad 1 Left Pad X: ", strafe)
-                .addData("Gamepad 1 Right Pad X: ", turn)
-                .addData("Gamepad 2 Right Pad Y: ", gamepad2RightJoystickY)
-
-                .addData("Drive Data ", "-----")
-                .addData("Front Left Power: ", powers[0])
-                .addData("Back Left Power: ", powers[1])
-                .addData("Front Right Power: ", powers[2])
-                .addData("Back Right Power: ", powers[3])
-                .addData("Heading: ", Math.toDegrees(heading) + 180)
-
-                .addData("Subsystem Data ", "-----")
-                .addData("Slide Position Index: ", robot.getLinearSlideIndex())
-                .addData("Slide Position", robot.linearSlide.getCurrentPosition())
-                .addData("Wrist Position Index: ", robot.getWristIndex())
-                .addData("Arm Position: ", robot.getTrolleyPosition());
-
-        telemetry.update();
     }
 }
