@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -7,6 +8,8 @@ import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.IMU;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
+
+import java.util.List;
 
 
 public class Robot {
@@ -25,6 +28,8 @@ public class Robot {
     public Servo claw = null;
     public Servo bucket = null;
     public IMU imu = null;
+
+    public List<LynxModule> allHubs;
 
     // Define a constructor that allows the OpMode to pass a reference to itself.
     public Robot(LinearOpMode opmode) {
@@ -48,6 +53,22 @@ public class Robot {
         // init
         initMotors();
         initSensors();
+
+        /**
+         * Bulk Caching Mode (see ConceptMotorBulkRead.java in the external.samples directory)
+         * Going into the Control Hub, asking it for a servo, motor, or encoder position, and returning it
+         * every time we call a .get() method is slow.
+         * Instead, we ask the Control Hub to save EVERYTHING in a big table at the start of each loop.
+         * When we call a .get() method, we're just reading from that table.
+         * This is called "bulk reading" and it's much faster.
+         *
+         * Analogy - Instead of going to the store every time you need a new ingredient,
+         * you go once, buy everything you need, and store it at home. You're buying in "bulk".
+         **/
+        allHubs = myOpMode.hardwareMap.getAll(LynxModule.class);
+        for (LynxModule module : allHubs) {
+            module.setBulkCachingMode(LynxModule.BulkCachingMode.MANUAL);
+        }
 
     }
 

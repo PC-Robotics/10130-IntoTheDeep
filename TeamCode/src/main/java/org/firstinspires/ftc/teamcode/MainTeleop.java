@@ -4,6 +4,7 @@ import static org.firstinspires.ftc.teamcode.Utility.applyDeadzone;
 import static org.firstinspires.ftc.teamcode.Utility.clamp;
 import static org.firstinspires.ftc.teamcode.Utility.normalizePowers;
 
+import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
@@ -45,6 +46,11 @@ public class MainTeleop extends LinearOpMode {
         initOpMode();
 
         while (opModeIsActive()) {
+            // clear bulk cache (see ConceptMotorBulkRead.java in the external.samples directory)
+            for (LynxModule module : robot.allHubs) {
+                module.clearBulkCache();
+            }
+
             readController();
             readSensors();
 
