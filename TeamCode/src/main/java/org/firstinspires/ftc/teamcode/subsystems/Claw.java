@@ -19,7 +19,7 @@ public class Claw {
     }
 
     public void init() {
-        claw = servoInit(opMode.hardwareMap, "bucket", Servo.Direction.FORWARD);
+        claw = servoInit(opMode.hardwareMap, "claw", Servo.Direction.FORWARD);
     }
 
     public void start() {

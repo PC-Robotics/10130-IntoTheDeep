@@ -41,7 +41,7 @@ public class Robot {
     public ElapsedTime timer = new ElapsedTime();
 
     public DriveBase driveBase;
-    protected LinearSlide linearSlide;
+    public LinearSlide linearSlide;
     public Trolley trolley;
     public Wrist wrist;
     public Intake intake;
@@ -52,7 +52,8 @@ public class Robot {
     // Define a constructor that allows the OpMode to pass a reference to itself.
     public Robot(LinearOpMode opMode) {
         this.myOpMode = opMode;
-        driveBase = new DriveBase(myOpMode, imu);
+        imu = new OurIMU(myOpMode);
+        driveBase = new DriveBase(myOpMode);
         linearSlide = new LinearSlide(myOpMode);
         trolley = new Trolley(myOpMode);
         wrist = new Wrist(myOpMode);
@@ -63,6 +64,7 @@ public class Robot {
 
     // initialize (main function)
     public void init() {
+        imu.init();
         driveBase.init();
         linearSlide.init();
         trolley.init();

@@ -20,17 +20,17 @@ public class LinearSlide {
 
     public void init() {
         linearSlide = motorInit(opMode.hardwareMap, "linearSlide", DcMotor.Direction.FORWARD);
-        linearSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
     }
 
     public void start() {
-        move(Settings.LinearSlide.STARTING_POSITION, Settings.LinearSlide.POWER);
+        move(Settings.LinearSlide.STARTING_POSITION, Settings.LinearSlide.POWER, false);
         stop();
         positionIndex = 0;
     }
 
     public void stop() {
         linearSlide.setPower(0);
+        linearSlide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
 
     public void stopFeedForward() {
@@ -40,6 +40,7 @@ public class LinearSlide {
     // MOVE
     public void move(int position, double power, boolean async) {
         linearSlide.setTargetPosition(position);
+        linearSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         linearSlide.setPower(power);
 
         if (!async) {

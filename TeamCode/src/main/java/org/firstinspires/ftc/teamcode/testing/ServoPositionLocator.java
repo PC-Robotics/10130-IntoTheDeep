@@ -33,13 +33,13 @@ public class ServoPositionLocator extends LinearOpMode {
     static final double LARGE_INCREMENT = 0.1;
 
     // The maximum and minimum positions of YOUR INTENDED RANGE OF THE SERVO
-    static final double MAX_POS = 1.0;
-    static final double MIN_POS = 0.0;
+    static final double MIN_POS = 0;
+    static final double MAX_POS = 1;
 
     // This is the position the servo will move to when the program starts
     // By default, it is the middle of the range
     // You can edit it to a specific position if you want
-    static final double STARTING_POS = (MAX_POS + MIN_POS) / 2;
+    static final double STARTING_POS = 0;
 
     // NOTE - END OF USER EDITABLE VARIABLES
     //
@@ -64,17 +64,20 @@ public class ServoPositionLocator extends LinearOpMode {
         // Connect to the servo
         // Change device name in variable definitions
         // Can move to an FTC Dashboard Config constants file to be able to change there
-        Servo servo = hardwareMap.get(Servo.class, SERVO_NAME);
-        Servo servo2 = hardwareMap.get(Servo.class, SERVO_NAME2);
+        Servo left = hardwareMap.get(Servo.class, SERVO_NAME);
+        Servo right = hardwareMap.get(Servo.class, SERVO_NAME2);
 
-        servo.setDirection(Servo.Direction.REVERSE);
-        servo.setDirection(Servo.Direction.REVERSE);
+        left.setDirection(Servo.Direction.REVERSE);
+        right.setDirection(Servo.Direction.REVERSE);
 
-        telemetry.addData(">", "Press Start to test "+ SERVO_NAME);
+        telemetry.addData(">", "Press Start to test " + SERVO_NAME);
         telemetry.addData(">", "Use x and b to make small adjustments");
         telemetry.addData(">", "Use dpad left and right to make large adjustments");
         telemetry.update();
         waitForStart();
+
+        left.setPosition(STARTING_POS);
+        right.setPosition(STARTING_POS);
 
         while(opModeIsActive()) {
             // Use x and b on Gamepad 1 to make smaller servo adjustments
@@ -122,13 +125,14 @@ public class ServoPositionLocator extends LinearOpMode {
             }
 
             // Clamp the position to the range of the servo
-            position = Utility.clamp(position, MIN_POS, MAX_POS);
+            // position = Utility.clamp(position, MIN_POS, MAX_POS);
 
             // Set the servo to the new position
-            servo.setPosition(position);
-            servo2.setPosition(position);
+            left.setPosition(position);
+            right.setPosition(position);
 
-            telemetry.addData("Servo Position", df.format(position));
+            telemetry.addData("Left Servo Position", df.format(left.getPosition()));
+            telemetry.addData("Right Servo Position", df.format(right.getPosition()));
             telemetry.addData(">", "Press Stop to end test." );
             telemetry.update();
 

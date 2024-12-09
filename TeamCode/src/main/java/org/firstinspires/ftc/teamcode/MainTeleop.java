@@ -15,19 +15,19 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
  * joysticks - mecanum drive
  * bumper left - fine control (half sped)
  * options - reset heading
- * trigger left - trolley go in
+ * trigger left - trolley go in (values wrong)
  * trigger right - trolley go out
- * square - claw close
+ * square - claw close (set to bucket now)
  * circle - claw open
 
  * Controller 2 - Operator
- * bumper left - wrist go "in"
+ * bumper left - wrist go "in" (not working well)
  * bumper right - wrist go "out"
  * trigger right - intake spin
  * trigger left - intake spin backwards
- * triangle - bucket release
- * cross - bucket pickup
- * dpadUp - slide index up
+ * triangle - bucket release (not working)
+ * cross - bucket pickup (slow)
+ * dpadUp - slide index up (not working)
  * dpadDown - slide index down
  * left joystick y - slide up down manual control
  */
@@ -105,12 +105,12 @@ public class MainTeleop extends LinearOpMode {
         } else { // now we're not in manual mode
             // if we're not pressing anything at all, stop the motor with some feedforward
             if (!gamepad2.dpad_up && !gamepad2.dpad_down) {
-                robot.linearSlide.stopFeedForward();
+                robot.linearSlide.stop();
             } else { // so we ARE pressing something
                 // if we just started position control this cycle, linearSlideInManualMode will be true
                 if (linearSlideInManualMode) {
                     // this means we just started position control, so we need to set the mode to run to position
-                    robot.linearSlide.linearSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                    // robot.linearSlide.linearSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                     // and set this to false so we don't change the mode over and over again
                     linearSlideInManualMode = false;
                 }

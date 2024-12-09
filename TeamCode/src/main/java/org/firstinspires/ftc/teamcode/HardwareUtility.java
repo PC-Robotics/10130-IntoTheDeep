@@ -24,17 +24,12 @@ public class HardwareUtility {
      * @return Configured DcMotor instance
      */
     public static DcMotor motorInit(HardwareMap hardwareMap, String name, DcMotor.Direction direction) {
-        try {
-            DcMotor motor = hardwareMap.get(DcMotor.class, name);
-            motor.setDirection(direction);
-            motor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-            motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-            motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            return motor;
-        } catch (Exception e) {
-            System.out.println("> (ERROR) Failed to initialize motor: " + name);
-            return null;
-        }
+        DcMotor motor = hardwareMap.get(DcMotor.class, name);
+        motor.setDirection(direction);
+        motor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        return motor;
     }
 
     /**
@@ -46,14 +41,9 @@ public class HardwareUtility {
      * @return Configured Servo instance
      */
     public static Servo servoInit(HardwareMap hardwareMap, String name, Servo.Direction direction) {
-        try {
-            Servo servo = hardwareMap.get(Servo.class, name);
-            servo.setDirection(direction);
-            return servo;
-        } catch (Exception e) {
-            System.out.println("> (ERROR) Failed to initialize servo: " + name);
-            return null;
-        }
+        Servo servo = hardwareMap.get(Servo.class, name);
+        servo.setDirection(direction);
+        return servo;
     }
 
     /**
@@ -65,13 +55,8 @@ public class HardwareUtility {
      * @return Configured CRServo instance
      */
     public static CRServo CRServoInit(HardwareMap hardwareMap, String name, CRServo.Direction direction) {
-        try {
-            CRServo crServo = hardwareMap.get(CRServo.class, name);
-            crServo.setDirection(direction);
-            return crServo;
-        } catch (Exception e) {
-            System.out.println("> (ERROR) Failed to initialize CRServo: " + name);
-            return null;
-        }
+        CRServo crServo = hardwareMap.get(CRServo.class, name);
+        crServo.setDirection(direction);
+        return crServo;
     }
 }

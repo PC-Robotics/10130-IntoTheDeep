@@ -20,7 +20,7 @@ public class DriveBase {
 
     private double[] powers = new double[4];
 
-    public DriveBase(LinearOpMode opMode, OurIMU imu) {
+    public DriveBase(LinearOpMode opMode) {
         this.opMode = opMode;
     }
 

@@ -18,8 +18,8 @@ public class Trolley {
     }
 
     public void init() {
-        leftTrolley = servoInit(opMode.hardwareMap, "leftTrolley", Servo.Direction.FORWARD);
-        rightTrolley = servoInit(opMode.hardwareMap, "rightTrolley", Servo.Direction.FORWARD);
+        leftTrolley = servoInit(opMode.hardwareMap, "left", Servo.Direction.REVERSE);
+        rightTrolley = servoInit(opMode.hardwareMap, "right", Servo.Direction.REVERSE);
     }
 
     public void start() {
@@ -29,6 +29,9 @@ public class Trolley {
     public void setPosition(double position) {
         leftTrolley.setPosition(position);
         rightTrolley.setPosition(position);
+        opMode.telemetry.addData("Left Trolley Position", leftTrolley.getPosition());
+        opMode.telemetry.addData("Right Trolley Position", rightTrolley.getPosition());
+        opMode.telemetry.update();
     }
 
     public double getPosition() {
