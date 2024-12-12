@@ -39,7 +39,7 @@ public class Settings {
 
 
     public static class Claw {
-        public static double OPEN_POSITION = 0.5;
+        public static double OPEN_POSITION = 0.58;
         public static double CLOSED_POSITION = 0.68;
     }
 

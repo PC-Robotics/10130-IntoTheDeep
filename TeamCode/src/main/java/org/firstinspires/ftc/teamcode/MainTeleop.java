@@ -54,7 +54,7 @@ public class MainTeleop extends LinearOpMode {
 
             robot.driveBase.fieldCentricDrive(straight, strafe, turn, heading, gamepad1.left_bumper);
             linearSlideControl();
-            trolleyControl();
+            // trolleyControl();
             wristControl();
             intakeControl();
             bucketControl();
@@ -63,7 +63,7 @@ public class MainTeleop extends LinearOpMode {
     }
 
     private void startingPositions() {
-        robot.trolley.start();
+        // robot.trolley.start();
         robot.wrist.start();
         robot.bucket.start();
         robot.claw.start();
@@ -187,8 +187,10 @@ public class MainTeleop extends LinearOpMode {
         if (gamepad2.triangle) {
             if (robot.linearSlide.positionIndex == 0 && robot.wrist.positionIndex == 2) {
                 robot.wrist.moveTowardsPickup();
-                robot.bucket.release();
+                sleep(100);
             }
+            robot.bucket.release();
+            
         } else if (gamepad2.cross) {
             robot.bucket.pickup();
         }

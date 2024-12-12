@@ -67,7 +67,7 @@ public class Robot {
         imu.init();
         driveBase.init();
         linearSlide.init();
-        trolley.init();
+        // trolley.init();
         wrist.init();
         intake.init();
         bucket.init();
