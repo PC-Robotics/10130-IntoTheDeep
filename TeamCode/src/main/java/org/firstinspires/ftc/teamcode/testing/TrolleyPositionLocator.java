@@ -7,9 +7,9 @@ import com.qualcomm.robotcore.hardware.Servo;
 
 import java.text.DecimalFormat;
 
-@TeleOp(name="Servo Position Locator",group="Testing")
+@TeleOp(name="Trolley Position Locator",group="Testing")
 
-public class ServoPositionLocator extends LinearOpMode {
+public class TrolleyPositionLocator extends LinearOpMode {
 
     //
     //
@@ -18,7 +18,8 @@ public class ServoPositionLocator extends LinearOpMode {
     // NOTE - USER EDITABLE VARIABLES
 
     // Change this to the name of the servo on the hardware map
-    static final String SERVO_NAME = "bucket";
+    static final String SERVO_NAME = "left";
+    static final String SERVO_NAME2 = "right";
 
     // INCREMENTS - Calculated as a percentage of the servo's total range
     // On a 5-turn servo, 0.01 will move the servo more than on a 1-turn servo
@@ -36,7 +37,7 @@ public class ServoPositionLocator extends LinearOpMode {
     // This is the position the servo will move to when the program starts
     // By default, it is the middle of the range
     // You can edit it to a specific position if you want
-    static final double STARTING_POS = 0.5;
+    static final double STARTING_POS = 0;
 
     // NOTE - END OF USER EDITABLE VARIABLES
     //
@@ -61,9 +62,11 @@ public class ServoPositionLocator extends LinearOpMode {
         // Connect to the servo
         // Change device name in variable definitions
         // Can move to an FTC Dashboard Config constants file to be able to change there
-        Servo servo = hardwareMap.get(Servo.class, SERVO_NAME);
+        Servo left = hardwareMap.get(Servo.class, SERVO_NAME);
+        Servo right = hardwareMap.get(Servo.class, SERVO_NAME2);
 
-        servo.setDirection(Servo.Direction.REVERSE);
+        left.setDirection(Servo.Direction.REVERSE);
+        right.setDirection(Servo.Direction.REVERSE);
 
         telemetry.addData(">", "Press Start to test " + SERVO_NAME);
         telemetry.addData(">", "Use x and b to make small adjustments");
@@ -71,7 +74,8 @@ public class ServoPositionLocator extends LinearOpMode {
         telemetry.update();
         waitForStart();
 
-        servo.setPosition(STARTING_POS);
+        left.setPosition(STARTING_POS);
+        right.setPosition(STARTING_POS);
 
         while(opModeIsActive()) {
             // Use x and b on Gamepad 1 to make smaller servo adjustments
@@ -122,9 +126,11 @@ public class ServoPositionLocator extends LinearOpMode {
             // position = Utility.clamp(position, MIN_POS, MAX_POS);
 
             // Set the servo to the new position
-            servo.setPosition(position);
+            left.setPosition(position);
+            right.setPosition(position);
 
-            telemetry.addData("Left Servo Position", df.format(servo.getPosition()));
+            telemetry.addData("Left Servo Position", df.format(left.getPosition()));
+            telemetry.addData("Right Servo Position", df.format(right.getPosition()));
             telemetry.addData(">", "Press Stop to end test." );
             telemetry.update();
 

@@ -7,87 +7,95 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.firstinspires.ftc.teamcode.Settings;
 
+/**
+ * LinearSlide subsystem for controlling the robot's linear slide mechanism.
+ */
 public class LinearSlide {
-    private LinearOpMode opMode;
-
+    private final LinearOpMode opMode;
     public DcMotor linearSlide;
-
     public int positionIndex = 0;
+    public boolean inManualMode = false;
 
     public LinearSlide(LinearOpMode opMode) {
         this.opMode = opMode;
     }
 
+    /**
+     * Initializes the linear slide motor.
+     */
     public void init() {
-        linearSlide = motorInit(opMode.hardwareMap, "linearSlide", DcMotor.Direction.FORWARD);
+        linearSlide = motorInit(opMode.hardwareMap, "linearSlide", DcMotor.Direction.REVERSE);
+        linearSlide.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
     }
 
+    /**
+     * Resets the motor encoder and moves to the starting position.
+     */
     public void start() {
-        move(Settings.LinearSlide.STARTING_POSITION, Settings.LinearSlide.POWER, false);
-        stop();
+        linearSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        moveToPosition(Settings.LinearSlide.STARTING_POSITION, Settings.LinearSlide.POWER);
         positionIndex = 0;
+        opMode.sleep(200);
+        stop();
     }
 
+    /**
+     * Stops the linear slide motor.
+     */
     public void stop() {
         linearSlide.setPower(0);
-        linearSlide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        linearSlide.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
     }
 
-    public void stopFeedForward() {
-        linearSlide.setPower(0.05);
-    }
-
-    // MOVE
-    public void move(int position, double power, boolean async) {
+    /**
+     * Moves the slide to a specific position with a given power.
+     *
+     * @param position Target position in encoder ticks.
+     * @param power    Power level for the motor.
+     */
+    public void moveToPosition(int position, double power) {
         linearSlide.setTargetPosition(position);
         linearSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         linearSlide.setPower(power);
-
-        if (!async) {
-            waitForCompletion();
-
-            stop();
-        }
     }
 
-    public void move(int position, double power) {
-        move(position, power, false);
-    }
-
-    public void move(int position, boolean async) {
-        move(position, Settings.LinearSlide.POWER, async);
-    }
-
-    public void move(int position) {
-        move(position, Settings.LinearSlide.POWER);
-    }
-
-
+    /**
+     * Increases the slide position to the next preset position.
+     *
+     * @param power Power level for the motor.
+     */
     public void increasePosition(double power) {
-        if (positionIndex < Settings.LinearSlide.POSITIONS.length() - 1) {
+        if (positionIndex < Settings.LinearSlide.POSITIONS.size() - 1) {
             positionIndex++;
-            move(Settings.LinearSlide.POSITIONS.get(positionIndex), power);
-        }
-
-        if (positionIndex == 1) {
-            linearSlide.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+            moveToPosition(Settings.LinearSlide.POSITIONS.get(positionIndex), power);
         }
     }
 
+    /**
+     * Decreases the slide position to the previous preset position.
+     *
+     * @param power Power level for the motor.
+     */
     public void decreasePosition(double power) {
         if (positionIndex > 0) {
             positionIndex--;
-            move(Settings.LinearSlide.POSITIONS.get(positionIndex), power);
-        }
-
-        if (positionIndex == 0) {
-            linearSlide.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+            moveToPosition(Settings.LinearSlide.POSITIONS.get(positionIndex), power);
         }
     }
 
+    /**
+     * Waits for the slide motor to finish moving to its target position.
+     */
     public void waitForCompletion() {
         while (linearSlide.isBusy() && opMode.opModeIsActive()) {
             opMode.idle();
         }
+    }
+
+    /**
+     * Sets a minimal feed-forward power to hold the slide position.
+     */
+    public void holdPosition() {
+        linearSlide.setPower(0.05);
     }
 }

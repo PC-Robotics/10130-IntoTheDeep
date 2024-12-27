@@ -40,7 +40,7 @@ public class MainTeleop extends LinearOpMode {
     private double straight, turn, strafe, heading;
 
     private double gamepad1LeftTrigger, gamepad1RightTrigger, gamepad2LeftTrigger, gamepad2RightTrigger, gamepad2RightJoystickY;
-    private boolean gamepad2LeftBumper = false, gamepad2RightBumper = false, gamepad2DpadUp = false, gamepad2DpadDown = false, linearSlideInManualMode = false;
+    private boolean gamepad2LeftBumper = false, gamepad2RightBumper = false, gamepad2DpadUp = false, gamepad2DpadDown = false;
     public void runOpMode() {
         robot.init();
         waitForStart();
@@ -59,6 +59,9 @@ public class MainTeleop extends LinearOpMode {
             intakeControl();
             bucketControl();
             clawControl();
+
+            telemetry.addData("linear slide position", robot.linearSlide.linearSlide.getCurrentPosition());
+            telemetry.update();
         }
     }
 
@@ -89,55 +92,77 @@ public class MainTeleop extends LinearOpMode {
         heading = robot.imu.getHeading(AngleUnit.RADIANS);
     }
 
+    /**
+     * Controls the linear slide mechanism with two modes: Position Mode and Manual Mode.
+     *
+     * Position Mode:
+     * - Triggered by pressing dpad up or dpad down on gamepad2.
+     * - Moves the slide to pre-defined positions using preset methods.
+     *
+     * Manual Mode:
+     * - Triggered when gamepad2's right joystick y-axis is used.
+     * - Allows direct control of the slide motor with clamped power levels.
+     * - Prevents the slide from moving beyond STARTING_POSITION and SECOND_BUCKET_POSITION.
+     * - Temporarily switches the motor to RUN_USING_ENCODER mode.
+     *
+     * If no input is detected, a minimal feed-forward power is applied to hold position.
+     */
+    double scaledManualPower, clampedPower;
     private void linearSlideControl() {
-        // are we in manual control mode?
+        scaledManualPower = gamepad2RightJoystickY / 2; // Scaled joystick input for finer control
+
+        if (gamepad2RightJoystickY > 0) {
+            
+        }
+
+        // Rising edge detection for dpad_up
+        if (gamepad2.dpad_up && !gamepad2DpadUp) {
+            gamepad2DpadUp = true;
+            robot.linearSlide.increasePosition(Settings.LinearSlide.POWER);
+        } else if (!gamepad2.dpad_up) {
+            gamepad2DpadUp = false;
+        }
+
+        // Rising edge detection for dpad_down
+        if (gamepad2.dpad_down && !gamepad2DpadDown) {
+            gamepad2DpadDown = true;
+            robot.linearSlide.decreasePosition(Settings.LinearSlide.POWER);
+        } else if (!gamepad2.dpad_down) {
+            gamepad2DpadDown = false;
+        }
+
+        // Check for Manual Mode (joystick input)
         if (gamepad2RightJoystickY != 0) {
-            // if we just started manual control this cycle, linearSlideInManualMode will be false
-            if (!linearSlideInManualMode) {
-                // this means we just started manual control, so we need to set the mode to run without position
-                robot.linearSlide.linearSlide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-                // and set this to true so we don't change the mode over and over again
-                linearSlideInManualMode = true;
+            if (!robot.linearSlide.inManualMode) {
+                if (robot.linearSlide.linearSlide.getMode() != DcMotor.RunMode.RUN_USING_ENCODER) {
+                    robot.linearSlide.linearSlide.setMode(DcMotor.RunMode.RUN_USING_ENCODER); // allows the robot to be run purely by setting motor power
+                }
+                robot.linearSlide.inManualMode = true;
             }
 
-            // set the power to the joystick value
-            robot.linearSlide.linearSlide.setPower(gamepad2RightJoystickY / 2); // half speed for fine control
-        } else { // now we're not in manual mode
-            // if we're not pressing anything at all, stop the motor with some feedforward
-            if (!gamepad2.dpad_up && !gamepad2.dpad_down) {
-                robot.linearSlide.stop();
-            } else { // so we ARE pressing something
-                // if we just started position control this cycle, linearSlideInManualMode will be true
-                if (linearSlideInManualMode) {
-                    // this means we just started position control, so we need to set the mode to run to position
-                    // robot.linearSlide.linearSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                    // and set this to false so we don't change the mode over and over again
-                    linearSlideInManualMode = false;
-                }
+            // Clamp manual power to allowable range
+            clampedPower = clamp(scaledManualPower, -Settings.LinearSlide.POWER, Settings.LinearSlide.POWER);
 
-                // if we're pressing dpad up, increase the position index
-                if (gamepad2.dpad_up) {
-                    if (!gamepad2DpadUp) { // rising edge detection (see game manual 0)
-                        robot.linearSlide.increasePosition(Settings.LinearSlide.POWER);
-                        gamepad2DpadUp = true;
-                    }
-                } else {
-                    gamepad2DpadUp = false;
-                }
-
-                // if we're pressing dpad down, decrease the position index
-                // but dpad up takes priority so we don't consider dpad down if dpad up is pressed
-                if (gamepad2.dpad_down && !gamepad2.dpad_up) {
-                    if (!gamepad2DpadDown) { // rising edge detection (see game manual 0)
-                        robot.linearSlide.decreasePosition(Settings.LinearSlide.POWER);
-                        gamepad2DpadDown = true;
-                    }
-                } else {
-                    gamepad2DpadDown = false;
-                }
+            // Prevent slide from exceeding allowable position range
+            if ((clampedPower > 0 && robot.linearSlide.linearSlide.getCurrentPosition() >= Settings.LinearSlide.SECOND_BUCKET_POSITION) ||
+                    (clampedPower < 0 && robot.linearSlide.linearSlide.getCurrentPosition() <= Settings.LinearSlide.STARTING_POSITION)) {
+                clampedPower = 0;
             }
+
+            robot.linearSlide.linearSlide.setPower(clampedPower);
+        } else {
+            if (robot.linearSlide.inManualMode) {
+                if (robot.linearSlide.linearSlide.getMode() != DcMotor.RunMode.RUN_TO_POSITION) {
+                    robot.linearSlide.linearSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                }
+                robot.linearSlide.inManualMode = false;
+            }
+            // If no inputs, stop and hold position using minimal power
+            robot.linearSlide.linearSlide.setTargetPosition(robot.linearSlide.linearSlide.getCurrentPosition());
+            robot.linearSlide.linearSlide.setPower(0.05);
         }
     }
+
 
     private void trolleyControl() {
         double newTrolleyPosition = robot.trolley.getPosition();
@@ -190,7 +215,6 @@ public class MainTeleop extends LinearOpMode {
                 sleep(100);
             }
             robot.bucket.release();
-            
         } else if (gamepad2.cross) {
             robot.bucket.pickup();
         }

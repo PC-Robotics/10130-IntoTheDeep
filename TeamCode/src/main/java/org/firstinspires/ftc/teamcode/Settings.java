@@ -21,7 +21,7 @@ public class Settings {
         public static double POWER = 0.66;
         public static double FINE_CONTROL_POWER = 0.33;
 
-        public static int STARTING_POSITION = 10;
+        public static int STARTING_POSITION = 50;
         public static int FIRST_BUCKET_POSITION = 2700;
         public static int SECOND_BUCKET_POSITION = 4100;
 
@@ -59,8 +59,8 @@ public class Settings {
 
 
     public static class Bucket {
-        public static double PICKUP_POSITION = 0.514;
-        public static double RELEASE_POSITION = 0.48;
+        public static double PICKUP_POSITION = 0.245;
+        public static double RELEASE_POSITION = 0.29;
     }
 
 
