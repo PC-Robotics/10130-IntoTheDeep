@@ -25,18 +25,12 @@ public class LinearSlide {
      */
     public void init() {
         linearSlide = motorInit(opMode.hardwareMap, "linearSlide", DcMotor.Direction.REVERSE);
-        linearSlide.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
     }
 
     /**
      * Resets the motor encoder and moves to the starting position.
      */
     public void start() {
-        linearSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        moveToPosition(Settings.LinearSlide.STARTING_POSITION, Settings.LinearSlide.POWER);
-        positionIndex = 0;
-        opMode.sleep(200);
-        stop();
     }
 
     /**

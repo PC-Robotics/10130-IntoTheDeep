@@ -18,7 +18,7 @@ public class Settings {
 
 
     public static class LinearSlide {
-        public static double POWER = 0.66;
+        public static double POWER = 1.0;
         public static double FINE_CONTROL_POWER = 0.33;
 
         public static int STARTING_POSITION = 50;
@@ -45,9 +45,9 @@ public class Settings {
 
 
     public static class Wrist {
-        public static double INTAKE_POSITION = 0.7;
-        public static double RELEASE_POSITION = 0.0;
-        public static double DRIVING_POSITION = 0.22;
+        public static double INTAKE_POSITION = 0.08;
+        public static double RELEASE_POSITION = 0.8;
+        public static double DRIVING_POSITION = 0.5;
 
         // Immutable list of wrist positions
         public static final List<Double> POSITIONS = List.of(
@@ -59,8 +59,8 @@ public class Settings {
 
 
     public static class Bucket {
-        public static double PICKUP_POSITION = 0.245;
-        public static double RELEASE_POSITION = 0.29;
+        public static double PICKUP_POSITION = 0.485;
+        public static double RELEASE_POSITION = 0.52;
     }
 
 

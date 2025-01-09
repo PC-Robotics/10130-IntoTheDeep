@@ -36,11 +36,12 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 // TODO - figure out subsystems and seperate drive.
 public class MainTeleop extends LinearOpMode {
     Robot robot = new Robot(this);
-    
+
     private double straight, turn, strafe, heading;
 
     private double gamepad1LeftTrigger, gamepad1RightTrigger, gamepad2LeftTrigger, gamepad2RightTrigger, gamepad2RightJoystickY;
     private boolean gamepad2LeftBumper = false, gamepad2RightBumper = false, gamepad2DpadUp = false, gamepad2DpadDown = false;
+
     public void runOpMode() {
         robot.init();
         waitForStart();
@@ -61,6 +62,10 @@ public class MainTeleop extends LinearOpMode {
             clawControl();
 
             telemetry.addData("linear slide position", robot.linearSlide.linearSlide.getCurrentPosition());
+            telemetry.addData("wrist position", robot.linearSlide.positionIndex);
+            telemetry.addData("wrist position", robot.wrist.positionIndex);
+
+
             telemetry.update();
         }
     }
@@ -88,36 +93,38 @@ public class MainTeleop extends LinearOpMode {
             robot.imu.resetYaw();
         }
     }
+
     private void readSensors() {
         heading = robot.imu.getHeading(AngleUnit.RADIANS);
     }
 
     /**
      * Controls the linear slide mechanism with two modes: Position Mode and Manual Mode.
-     *
+     * <p>
      * Position Mode:
      * - Triggered by pressing dpad up or dpad down on gamepad2.
      * - Moves the slide to pre-defined positions using preset methods.
-     *
+     * <p>
      * Manual Mode:
      * - Triggered when gamepad2's right joystick y-axis is used.
      * - Allows direct control of the slide motor with clamped power levels.
      * - Prevents the slide from moving beyond STARTING_POSITION and SECOND_BUCKET_POSITION.
      * - Temporarily switches the motor to RUN_USING_ENCODER mode.
-     *
+     * <p>
      * If no input is detected, a minimal feed-forward power is applied to hold position.
      */
     double scaledManualPower, clampedPower;
+
     private void linearSlideControl() {
         scaledManualPower = gamepad2RightJoystickY / 2; // Scaled joystick input for finer control
-
-        if (gamepad2RightJoystickY > 0) {
-            
-        }
 
         // Rising edge detection for dpad_up
         if (gamepad2.dpad_up && !gamepad2DpadUp) {
             gamepad2DpadUp = true;
+            if (robot.linearSlide.positionIndex == 0 && robot.wrist.positionIndex == 2) {
+                robot.wrist.moveToPositionIndex(1);
+                sleep(50);
+            }
             robot.linearSlide.increasePosition(Settings.LinearSlide.POWER);
         } else if (!gamepad2.dpad_up) {
             gamepad2DpadUp = false;
@@ -126,40 +133,27 @@ public class MainTeleop extends LinearOpMode {
         // Rising edge detection for dpad_down
         if (gamepad2.dpad_down && !gamepad2DpadDown) {
             gamepad2DpadDown = true;
+            if (robot.linearSlide.positionIndex == 1 && robot.wrist.positionIndex == 2) {
+                robot.wrist.moveToPositionIndex(1);
+                sleep(50);
+            }
             robot.linearSlide.decreasePosition(Settings.LinearSlide.POWER);
         } else if (!gamepad2.dpad_down) {
             gamepad2DpadDown = false;
         }
 
-        // Check for Manual Mode (joystick input)
-        if (gamepad2RightJoystickY != 0) {
-            if (!robot.linearSlide.inManualMode) {
-                if (robot.linearSlide.linearSlide.getMode() != DcMotor.RunMode.RUN_USING_ENCODER) {
-                    robot.linearSlide.linearSlide.setMode(DcMotor.RunMode.RUN_USING_ENCODER); // allows the robot to be run purely by setting motor power
-                }
-                robot.linearSlide.inManualMode = true;
+        // Manual control
+        if (!gamepad2.dpad_up && !gamepad2.dpad_down && scaledManualPower != 0) {
+            clampedPower = clamp(scaledManualPower, -Settings.LinearSlide.FINE_CONTROL_POWER, Settings.LinearSlide.FINE_CONTROL_POWER);
+            robot.linearSlide.linearSlide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            if (
+                    (robot.linearSlide.linearSlide.getCurrentPosition() > Settings.LinearSlide.POSITIONS.get(0) && clampedPower < 0) ||
+                    (robot.linearSlide.linearSlide.getCurrentPosition() < Settings.LinearSlide.POSITIONS.get(Settings.LinearSlide.POSITIONS.length()) && clampedPower > 0)
+            ){
+                robot.linearSlide.linearSlide.setPower(clampedPower);
+            } else {
+                robot.linearSlide.linearSlide.setPower(0);
             }
-
-            // Clamp manual power to allowable range
-            clampedPower = clamp(scaledManualPower, -Settings.LinearSlide.POWER, Settings.LinearSlide.POWER);
-
-            // Prevent slide from exceeding allowable position range
-            if ((clampedPower > 0 && robot.linearSlide.linearSlide.getCurrentPosition() >= Settings.LinearSlide.SECOND_BUCKET_POSITION) ||
-                    (clampedPower < 0 && robot.linearSlide.linearSlide.getCurrentPosition() <= Settings.LinearSlide.STARTING_POSITION)) {
-                clampedPower = 0;
-            }
-
-            robot.linearSlide.linearSlide.setPower(clampedPower);
-        } else {
-            if (robot.linearSlide.inManualMode) {
-                if (robot.linearSlide.linearSlide.getMode() != DcMotor.RunMode.RUN_TO_POSITION) {
-                    robot.linearSlide.linearSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                }
-                robot.linearSlide.inManualMode = false;
-            }
-            // If no inputs, stop and hold position using minimal power
-            robot.linearSlide.linearSlide.setTargetPosition(robot.linearSlide.linearSlide.getCurrentPosition());
-            robot.linearSlide.linearSlide.setPower(0.05);
         }
     }
 
@@ -178,21 +172,17 @@ public class MainTeleop extends LinearOpMode {
     }
 
     private void wristControl() {
-        if (gamepad2.left_bumper) {
-            if (!gamepad2LeftBumper) {
-                robot.wrist.moveTowardsPickup();
-                gamepad2LeftBumper = true;
-            }
-        } else {
+        if (gamepad2.left_bumper && !gamepad2LeftBumper) {
+            robot.wrist.moveTowardsPickup();
+            gamepad2LeftBumper = true;
+        } else if (!gamepad2.left_bumper) {
             gamepad2LeftBumper = false;
         }
 
-        if (gamepad2.right_bumper) {
-            if (!gamepad2RightBumper) {
-                robot.wrist.moveTowardsRelease();
-                gamepad2RightBumper = true;
-            }
-        } else {
+        if (gamepad2.right_bumper && !gamepad2RightBumper) {
+            robot.wrist.moveTowardsRelease();
+            gamepad2RightBumper = true;
+        } else if (!gamepad2.right_bumper) {
             gamepad2RightBumper = false;
         }
     }
@@ -211,7 +201,7 @@ public class MainTeleop extends LinearOpMode {
     private void bucketControl() {
         if (gamepad2.triangle) {
             if (robot.linearSlide.positionIndex == 0 && robot.wrist.positionIndex == 2) {
-                robot.wrist.moveTowardsPickup();
+                robot.wrist.moveToPositionIndex(1);
                 sleep(100);
             }
             robot.bucket.release();

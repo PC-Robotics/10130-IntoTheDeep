@@ -19,25 +19,27 @@ public class Wrist {
     }
     
     public void init() {
-        wrist = servoInit(opMode.hardwareMap, "wrist", Servo.Direction.FORWARD);
+        wrist = servoInit(opMode.hardwareMap, "wrist", Servo.Direction.REVERSE);
     }
 
     public void start() {
-        wrist.setPosition(Settings.Wrist.DRIVING_POSITION);
-        positionIndex = Settings.Wrist.POSITIONS.indexOf(Settings.Wrist.DRIVING_POSITION);
+        moveToPositionIndex(1); // start at drive position
+    }
+
+    public void moveToPositionIndex(int index) {
+        wrist.setPosition(Settings.Wrist.POSITIONS.get(index));
+        positionIndex = index;
     }
 
     public void moveTowardsRelease() {
         if (positionIndex < 2) {
-            wrist.setPosition(Settings.Wrist.POSITIONS.get(positionIndex));
-            positionIndex++;
+            moveToPositionIndex(positionIndex + 1);
         }
     }
 
     public void moveTowardsPickup() {
         if (positionIndex > 0) {
-            wrist.setPosition(Settings.Wrist.POSITIONS.get(positionIndex));
-            positionIndex--;
+            moveToPositionIndex(positionIndex - 1);
         }
     }
 }
