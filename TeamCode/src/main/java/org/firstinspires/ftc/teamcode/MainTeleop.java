@@ -61,11 +61,7 @@ public class MainTeleop extends LinearOpMode {
             bucketControl();
             clawControl();
 
-            telemetry.addData("linear slide position", robot.linearSlide.linearSlide.getCurrentPosition());
-            telemetry.addData("wrist position", robot.linearSlide.positionIndex);
-            telemetry.addData("wrist position", robot.wrist.positionIndex);
-
-
+            reloadTelemetry();
             telemetry.update();
         }
     }
@@ -216,5 +212,20 @@ public class MainTeleop extends LinearOpMode {
         } else if (gamepad1.circle) {
             robot.claw.open();
         }
+    }
+
+    private void reloadTelemetry() {
+        robot.trolley.telemetry();
+        robot.wrist.telemetry();
+        robot.bucket.telemetry();
+        robot.claw.telemetry();
+        robot.linearSlide.telemetry();
+        robot.intake.telemetry();
+
+        telemetry.addData("DRIVE BASE", "-----------");
+        robot.imu.telemetry();
+        robot.driveBase.telemetry();
+
+        telemetry.update();
     }
 }

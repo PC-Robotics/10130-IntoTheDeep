@@ -39,4 +39,8 @@ public class Intake {
     public void stop() {
         intake.setPower(0);
     }
+
+    public void telemetry() {
+        opMode.telemetry.addData("Intake Moving", intake.getPower() != 0);
+    }
 }

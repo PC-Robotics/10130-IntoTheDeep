@@ -43,4 +43,8 @@ public class OurIMU {
     public void resetYaw() {
         imu.resetYaw();
     }
+
+    public void telemetry() {
+        opMode.telemetry.addData("Heading", getHeading());
+    }
 }

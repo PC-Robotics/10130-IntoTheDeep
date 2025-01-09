@@ -35,4 +35,8 @@ public class Claw {
         claw.setPosition(Settings.Claw.CLOSED_POSITION);
         positionIndex = 0;
     }
+
+    public void telemetry() {
+        opMode.telemetry.addData("Claw Position Index", positionIndex);
+    }
 }

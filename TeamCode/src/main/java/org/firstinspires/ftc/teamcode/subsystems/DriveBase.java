@@ -163,4 +163,11 @@ public class DriveBase {
     public void setMotorPowers(double power) {
         setMotorPowers(power, power, power, power);
     }
+
+    public void telemetry() {
+        opMode.telemetry.addData("Front Left Power", frontLeft.getPower());
+        opMode.telemetry.addData("Back Left Power", backLeft.getPower());
+        opMode.telemetry.addData("Front Right Power", frontRight.getPower());
+        opMode.telemetry.addData("Back Right Power", backRight.getPower());
+    }
 }

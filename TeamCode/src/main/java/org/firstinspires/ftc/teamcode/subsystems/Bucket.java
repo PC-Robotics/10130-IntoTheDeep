@@ -36,5 +36,7 @@ public class Bucket {
         positionIndex = 1;
     }
 
-
+    public void telemetry() {
+        opMode.telemetry.addData("Bucket Position Index", positionIndex);
+    }
 }

@@ -92,4 +92,9 @@ public class LinearSlide {
     public void holdPosition() {
         linearSlide.setPower(0.05);
     }
+
+    public void telemetry() {
+        opMode.telemetry.addData("Linear Slide Position Index", positionIndex);
+        opMode.telemetry.addData("Linear Slide Encoder", linearSlide.getCurrentPosition());
+    }
 }

@@ -42,4 +42,8 @@ public class Wrist {
             moveToPositionIndex(positionIndex - 1);
         }
     }
+
+    public void telemetry() {
+        opMode.telemetry.addData("Wrist Position Index", positionIndex);
+    }
 }

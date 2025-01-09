@@ -46,4 +46,8 @@ public class Trolley {
     public void moveToOuterPosition() {
         setPosition(Settings.Trolley.OUT_POSITION);
     }
+
+    public void telemetry() {
+        opMode.telemetry.addData("Trolley Position", getPosition());
+    }
 }
