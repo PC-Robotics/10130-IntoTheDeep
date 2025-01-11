@@ -1,3 +1,6 @@
+# test folder - its a test file, no need to upload to git
+TeamCode/src/main/java/org/firstinspires/ftc/teamcode/testing/
+
 # Built application files
 *.apk
 *.aar
