@@ -9,15 +9,15 @@ import org.firstinspires.ftc.teamcode.Settings;
 
 public class Wrist {
     public LinearOpMode opMode;
-    
+
     public Servo wrist;
-    
+
     public int positionIndex = 0;
-    
+
     public Wrist(LinearOpMode opMode) {
         this.opMode = opMode;
     }
-    
+
     public void init() {
         wrist = servoInit(opMode.hardwareMap, "wrist", Servo.Direction.REVERSE);
     }

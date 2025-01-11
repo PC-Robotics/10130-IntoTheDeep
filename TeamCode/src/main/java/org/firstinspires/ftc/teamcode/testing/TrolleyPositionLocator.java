@@ -7,7 +7,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 
 import java.text.DecimalFormat;
 
-@TeleOp(name="Trolley Position Locator",group="Testing")
+@TeleOp(name = "Trolley Position Locator", group = "Testing")
 
 public class TrolleyPositionLocator extends LinearOpMode {
 
@@ -77,12 +77,12 @@ public class TrolleyPositionLocator extends LinearOpMode {
         left.setPosition(STARTING_POS);
         right.setPosition(STARTING_POS);
 
-        while(opModeIsActive()) {
+        while (opModeIsActive()) {
             // Use x and b on Gamepad 1 to make smaller servo adjustments
 
             // x moves the servo to the left
-            if(gamepad1.x) {
-                if(!xPressed) {
+            if (gamepad1.x) {
+                if (!xPressed) {
                     xPressed = true;
                     position -= SMALL_INCREMENT;
                 }
@@ -91,8 +91,8 @@ public class TrolleyPositionLocator extends LinearOpMode {
             }
 
             // b moves the servo to the right
-            if(gamepad1.b) {
-                if(!bPressed) {
+            if (gamepad1.b) {
+                if (!bPressed) {
                     bPressed = true;
                     position += SMALL_INCREMENT;
                 }
@@ -103,8 +103,8 @@ public class TrolleyPositionLocator extends LinearOpMode {
             // Use Left and Right on d-pad for large adjustments
 
             // left moves the servo to the left
-            if(gamepad1.dpad_left) {
-                if(!leftPressed) {
+            if (gamepad1.dpad_left) {
+                if (!leftPressed) {
                     leftPressed = true;
                     position -= LARGE_INCREMENT;
                 }
@@ -113,8 +113,8 @@ public class TrolleyPositionLocator extends LinearOpMode {
             }
 
             // right moves the servo to the right
-            if(gamepad1.dpad_right) {
-                if(!rightPressed) {
+            if (gamepad1.dpad_right) {
+                if (!rightPressed) {
                     rightPressed = true;
                     position += LARGE_INCREMENT;
                 }
@@ -131,7 +131,7 @@ public class TrolleyPositionLocator extends LinearOpMode {
 
             telemetry.addData("Left Servo Position", df.format(left.getPosition()));
             telemetry.addData("Right Servo Position", df.format(right.getPosition()));
-            telemetry.addData(">", "Press Stop to end test." );
+            telemetry.addData(">", "Press Stop to end test.");
             telemetry.update();
 
         }

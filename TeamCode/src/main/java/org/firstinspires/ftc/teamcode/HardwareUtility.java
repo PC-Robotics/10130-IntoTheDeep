@@ -19,8 +19,8 @@ public class HardwareUtility {
      * Initializes a DcMotor with the specified parameters.
      *
      * @param hardwareMap Hardware map to access robot configuration
-     * @param name Name of the motor in the hardware map
-     * @param direction Direction for the motor
+     * @param name        Name of the motor in the hardware map
+     * @param direction   Direction for the motor
      * @return Configured DcMotor instance
      */
     public static DcMotor motorInit(HardwareMap hardwareMap, String name, DcMotor.Direction direction) {
@@ -36,8 +36,8 @@ public class HardwareUtility {
      * Initializes a Servo with the specified parameters.
      *
      * @param hardwareMap Hardware map to access robot configuration
-     * @param name Name of the servo in the hardware map
-     * @param direction Direction for the servo
+     * @param name        Name of the servo in the hardware map
+     * @param direction   Direction for the servo
      * @return Configured Servo instance
      */
     public static Servo servoInit(HardwareMap hardwareMap, String name, Servo.Direction direction) {
@@ -50,8 +50,8 @@ public class HardwareUtility {
      * Initializes a CRServo with the specified parameters.
      *
      * @param hardwareMap Hardware map to access robot configuration
-     * @param name Name of the CRServo in the hardware map
-     * @param direction Direction for the CRServo
+     * @param name        Name of the CRServo in the hardware map
+     * @param direction   Direction for the CRServo
      * @return Configured CRServo instance
      */
     public static CRServo CRServoInit(HardwareMap hardwareMap, String name, CRServo.Direction direction) {

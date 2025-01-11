@@ -19,7 +19,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
  * trigger right - trolley go out
  * square - claw close (set to bucket now)
  * circle - claw open
-
+ * <p>
  * Controller 2 - Operator
  * bumper left - wrist go "in" (not working well)
  * bumper right - wrist go "out"
@@ -32,7 +32,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
  * left joystick y - slide up down manual control
  */
 
-@TeleOp(name="Main Teleop", group=" Main")
+@TeleOp(name = "Main Teleop", group = " Main")
 // TODO - figure out subsystems and seperate drive.
 public class MainTeleop extends LinearOpMode {
     Robot robot = new Robot(this);
@@ -144,8 +144,8 @@ public class MainTeleop extends LinearOpMode {
             robot.linearSlide.linearSlide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             if (
                     (robot.linearSlide.linearSlide.getCurrentPosition() > Settings.LinearSlide.POSITIONS.get(0) && clampedPower < 0) ||
-                    (robot.linearSlide.linearSlide.getCurrentPosition() < Settings.LinearSlide.POSITIONS.get(Settings.LinearSlide.POSITIONS.length()) && clampedPower > 0)
-            ){
+                            (robot.linearSlide.linearSlide.getCurrentPosition() < Settings.LinearSlide.POSITIONS.get(Settings.LinearSlide.POSITIONS.length()) && clampedPower > 0)
+            ) {
                 robot.linearSlide.linearSlide.setPower(clampedPower);
             } else {
                 robot.linearSlide.linearSlide.setPower(0);

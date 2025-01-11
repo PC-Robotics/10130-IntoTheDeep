@@ -57,8 +57,8 @@ public class DriveBase {
      * Drive the robot using field-centric drive.
      *
      * @param straight Power for forward/backward movement
-     * @param strafe Power for left/right movement
-     * @param turn Power for turning
+     * @param strafe   Power for left/right movement
+     * @param turn     Power for turning
      * @see <a href="https://gm0.org/en/latest/docs/software/tutorials/mecanum-drive.html">gm0 guide</a>
      */
     public void fieldCentricDrive(double straight, double strafe, double turn, double heading, boolean fineControl) {
@@ -89,8 +89,8 @@ public class DriveBase {
      * Drive the robot using mecanum drive.
      *
      * @param straight Power for forward/backward movement
-     * @param strafe Power for left/right movement
-     * @param turn Power for turning
+     * @param strafe   Power for left/right movement
+     * @param turn     Power for turning
      */
     public void mecanumDrive(double straight, double strafe, double turn, boolean fineControl) {
         // calculate powers
@@ -113,15 +113,16 @@ public class DriveBase {
 
     /**
      * Get the average position of all four drive motors.
+     *
      * @return Average position of all four drive motors
      */
     public double getAverageDrivePosition() {
         return (double)
                 (
-                    frontLeft.getCurrentPosition() +
-                    frontRight.getCurrentPosition() +
-                    backLeft.getCurrentPosition() +
-                    backRight.getCurrentPosition()
+                        frontLeft.getCurrentPosition() +
+                                frontRight.getCurrentPosition() +
+                                backLeft.getCurrentPosition() +
+                                backRight.getCurrentPosition()
                 ) / (4 * Settings.Autonomous.TICKS_PER_IN);
     }
 
@@ -130,10 +131,10 @@ public class DriveBase {
     /**
      * Set motor power levels for all four drive motors.
      *
-     * @param frontLeftPower Power for the front left motor
-     * @param backLeftPower Power for the back left motor
+     * @param frontLeftPower  Power for the front left motor
+     * @param backLeftPower   Power for the back left motor
      * @param frontRightPower Power for the front right motor
-     * @param backRightPower Power for the back right motor
+     * @param backRightPower  Power for the back right motor
      */
     public void setMotorPowers(double frontLeftPower, double backLeftPower, double frontRightPower, double backRightPower) {
         frontLeft.setPower(frontLeftPower);
