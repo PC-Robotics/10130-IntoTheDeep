@@ -5,9 +5,7 @@ import static org.firstinspires.ftc.teamcode.Utility.normalizePowers;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.IMU;
 
-import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.teamcode.Settings;
 
 /**
@@ -16,7 +14,7 @@ import org.firstinspires.ftc.teamcode.Settings;
 public class DriveBase {
     private LinearOpMode opMode;
 
-    public DcMotor frontLeft, backLeft, frontRight, backRight;
+    public DcMotor leftFront, leftBack, rightFront, rightBack;
 
     private double[] powers = new double[4];
 
@@ -28,10 +26,10 @@ public class DriveBase {
      * Initialize the drive motors and configure their settings.
      */
     public void init() {
-        frontLeft = motorInit(opMode.hardwareMap, "frontLeft", DcMotor.Direction.FORWARD);
-        backLeft = motorInit(opMode.hardwareMap, "backLeft", DcMotor.Direction.FORWARD);
-        frontRight = motorInit(opMode.hardwareMap, "frontRight", DcMotor.Direction.REVERSE);
-        backRight = motorInit(opMode.hardwareMap, "backRight", DcMotor.Direction.REVERSE);
+        leftFront = motorInit(opMode.hardwareMap, "frontLeft", DcMotor.Direction.FORWARD);
+        leftBack = motorInit(opMode.hardwareMap, "backLeft", DcMotor.Direction.FORWARD);
+        rightFront = motorInit(opMode.hardwareMap, "frontRight", DcMotor.Direction.REVERSE);
+        rightBack = motorInit(opMode.hardwareMap, "backRight", DcMotor.Direction.REVERSE);
 
         opMode.telemetry.addData("> (INFO)", "DriveBase Initialized");
         opMode.telemetry.update();
@@ -119,10 +117,10 @@ public class DriveBase {
     public double getAverageDrivePosition() {
         return (double)
                 (
-                        frontLeft.getCurrentPosition() +
-                                frontRight.getCurrentPosition() +
-                                backLeft.getCurrentPosition() +
-                                backRight.getCurrentPosition()
+                        leftFront.getCurrentPosition() +
+                                rightFront.getCurrentPosition() +
+                                leftBack.getCurrentPosition() +
+                                rightBack.getCurrentPosition()
                 ) / (4 * Settings.Autonomous.TICKS_PER_IN);
     }
 
@@ -137,10 +135,10 @@ public class DriveBase {
      * @param backRightPower  Power for the back right motor
      */
     public void setMotorPowers(double frontLeftPower, double backLeftPower, double frontRightPower, double backRightPower) {
-        frontLeft.setPower(frontLeftPower);
-        backLeft.setPower(backLeftPower);
-        frontRight.setPower(frontRightPower);
-        backRight.setPower(backRightPower);
+        leftFront.setPower(frontLeftPower);
+        leftBack.setPower(backLeftPower);
+        rightFront.setPower(frontRightPower);
+        rightBack.setPower(backRightPower);
     }
 
     /**
@@ -166,9 +164,9 @@ public class DriveBase {
     }
 
     public void telemetry() {
-        opMode.telemetry.addData("Front Left Power", frontLeft.getPower());
-        opMode.telemetry.addData("Back Left Power", backLeft.getPower());
-        opMode.telemetry.addData("Front Right Power", frontRight.getPower());
-        opMode.telemetry.addData("Back Right Power", backRight.getPower());
+        opMode.telemetry.addData("Front Left Power", leftFront.getPower());
+        opMode.telemetry.addData("Back Left Power", leftBack.getPower());
+        opMode.telemetry.addData("Front Right Power", rightFront.getPower());
+        opMode.telemetry.addData("Back Right Power", rightBack.getPower());
     }
 }
