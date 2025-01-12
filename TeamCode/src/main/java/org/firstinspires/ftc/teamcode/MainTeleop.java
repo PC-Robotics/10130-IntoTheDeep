@@ -47,7 +47,7 @@ public class MainTeleop extends LinearOpMode {
 
         initOpMode();
 
-        while (opModeIsActive()) {
+        while (opModeIsActive()) { // hi
             readController();
             readSensors();
 
