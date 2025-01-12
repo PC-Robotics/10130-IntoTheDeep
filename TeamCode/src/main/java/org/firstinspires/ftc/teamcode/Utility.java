@@ -2,7 +2,7 @@ package org.firstinspires.ftc.teamcode;
 
 public final class Utility {
     private Utility() {
-        throw new java.lang.UnsupportedOperationException(
+        throw new UnsupportedOperationException(
                 "This is a utility class and cannot be instantiated"
         );
     }

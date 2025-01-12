@@ -10,7 +10,7 @@ import com.qualcomm.robotcore.hardware.Servo;
  */
 public class HardwareUtility {
     private HardwareUtility() {
-        throw new java.lang.UnsupportedOperationException(
+        throw new UnsupportedOperationException(
                 "This is a utility class and cannot be instantiated"
         );
     }
