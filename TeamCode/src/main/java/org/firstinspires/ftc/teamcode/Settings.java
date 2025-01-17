@@ -70,9 +70,13 @@ public class Settings {
 
 
     public static class Autonomous {
-        public static final double TICKS_PER_REVOLUTION = 537.6;
+        public static final double WHEEL_TICKS_PER_REVOLUTION = 537.6;
         public static final double WHEEL_DIAMETER_IN = 3.77952;
-        public static final double TICKS_PER_IN = TICKS_PER_REVOLUTION / (WHEEL_DIAMETER_IN * Math.PI);
+        public static final double WHEEL_IN_PER_TICK = (WHEEL_DIAMETER_IN * Math.PI) / WHEEL_TICKS_PER_REVOLUTION;
+
+        public static final double ODOMETRY_WHEEL_TICKS_PER_REVOLUTION = 2000;
+        public static final double ODOMETRY_WHEEL_DIAMETER_IN = 1.88976;
+        public static final double ODOMETRY_WHEEL_IN_PER_TICK = (ODOMETRY_WHEEL_DIAMETER_IN * Math.PI) / ODOMETRY_WHEEL_TICKS_PER_REVOLUTION;
 
         public static int DEFAULT_DRIVE_TIMEOUT_MS = 3000;
         public static double DEFAULT_DRIVE_MAX_POWER = 0.5;
@@ -92,15 +96,31 @@ public class Settings {
 
         public static class DrivePID {
             public static double kP = 1.5;
-
-            public static double ELIPSON = 3;
-
+            public static double kI = 0.1;
+            public static double kD = 0.03;
+            public static double[] COEFFICIENTS = {kP, kI, kD};
+            public static double TOLERANCE = 1;
+            public static double TIME_TO_SETTLE = 0.5;
         }
 
-        public static class TurnPID {
-            public static double kP = 1.5;
+        public static class StrafePID {
+            public static double kP = 0.36;
+            public static double kI = 0.1;
+            public static double kD = 0.075;
+            public static double[] COEFFICIENTS = {kP, kI, kD};
+            public static double TOLERANCE = 1;
+            public static double TIME_TO_SETTLE = 0.5;
+        }
 
-            public static double ELIPSON = 3;
+        // all turning done in degrees
+        public static class TurnPID {
+            public static double kP = 1.55;
+            public static double kI = 0.08;
+            public static double kD = 0.21;
+            public static double[] COEFFICIENTS = {kP, kI, kD};
+            public static double TOLERANCE = 2;
+            public static double TIME_TO_SETTLE = 0.5;
+
         }
     }
 }

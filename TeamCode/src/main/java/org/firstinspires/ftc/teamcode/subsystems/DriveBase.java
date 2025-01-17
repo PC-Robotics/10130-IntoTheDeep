@@ -16,8 +16,12 @@ import org.firstinspires.ftc.teamcode.Settings;
 public class DriveBase {
     private LinearOpMode opMode;
 
-    public DcMotor frontLeft, backLeft, frontRight, backRight;
     public DcMotorEx frontLeft, backLeft, frontRight, backRight;
+
+    public DcMotorEx varticalEncoder, horizontalEncoder;
+
+    private double startingTicksX, startingTicksY;
+    public double ticksTraveledX, ticksTraveledY, inchesTraveledX, inchesTraveledY;
 
     private double[] powers = new double[4];
 
@@ -33,6 +37,15 @@ public class DriveBase {
         backLeft = motorInit(opMode.hardwareMap, "backLeft", DcMotor.Direction.FORWARD);
         frontRight = motorInit(opMode.hardwareMap, "frontRight", DcMotor.Direction.REVERSE);
         backRight = motorInit(opMode.hardwareMap, "backRight", DcMotor.Direction.REVERSE);
+
+        varticalEncoder = opMode.hardwareMap.get(DcMotorEx.class, "par");
+        horizontalEncoder = opMode.hardwareMap.get(DcMotorEx.class, "perp");
+
+        varticalEncoder.setDirection(DcMotorSimple.Direction.REVERSE);
+        horizontalEncoder.setDirection(DcMotorSimple.Direction.FORWARD);
+
+        startingTicksX = varticalEncoder.getCurrentPosition();
+        startingTicksY = horizontalEncoder.getCurrentPosition();
 
         opMode.telemetry.addData("> (INFO)", "DriveBase Initialized");
         opMode.telemetry.update();
@@ -112,21 +125,6 @@ public class DriveBase {
         setMotorPowers(powers);
     }
 
-    /**
-     * Get the average position of all four drive motors.
-     *
-     * @return Average position of all four drive motors
-     */
-    public double getAverageDrivePosition() {
-        return (double)
-                (
-                        frontLeft.getCurrentPosition() +
-                                frontRight.getCurrentPosition() +
-                                backLeft.getCurrentPosition() +
-                                backRight.getCurrentPosition()
-                ) / (4 * Settings.Autonomous.TICKS_PER_IN);
-    }
-
     // SET MOTOR POWERS
 
     /**
@@ -166,10 +164,25 @@ public class DriveBase {
         setMotorPowers(power, power, power, power);
     }
 
+    // ODOMETRY
+    public void resetOdometry() {
+        startingTicksY = varticalEncoder.getCurrentPosition();
+        startingTicksX = horizontalEncoder.getCurrentPosition();
+    }
+
+    public void updateOdometry() {
+        ticksTraveledY = varticalEncoder.getCurrentPosition() - startingTicksY;
+        ticksTraveledX = horizontalEncoder.getCurrentPosition() - startingTicksX;
+        inchesTraveledX = ticksTraveledX * Settings.Autonomous.ODOMETRY_WHEEL_IN_PER_TICK;
+        inchesTraveledY = ticksTraveledY * Settings.Autonomous.ODOMETRY_WHEEL_IN_PER_TICK;
+    }
+
     public void telemetry() {
         opMode.telemetry.addData("Front Left Power", frontLeft.getPower());
         opMode.telemetry.addData("Back Left Power", backLeft.getPower());
         opMode.telemetry.addData("Front Right Power", frontRight.getPower());
         opMode.telemetry.addData("Back Right Power", backRight.getPower());
+        opMode.telemetry.addData("Y Ticks Traveled", ticksTraveledY);
+        opMode.telemetry.addData("X Ticks Traveled", ticksTraveledX);
     }
 }
