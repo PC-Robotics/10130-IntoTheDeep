@@ -46,6 +46,7 @@ public class MainTeleop extends LinearOpMode {
         robot.init();
         waitForStart();
         robot.imu.resetYaw();
+        robot.driveBase.resetOdometry();
 
         startingPositions();
 
@@ -60,9 +61,11 @@ public class MainTeleop extends LinearOpMode {
             intakeControl();
             bucketControl();
             clawControl();
+            robot.driveBase.updateOdometry();
 
             reloadTelemetry();
             telemetry.update();
+
         }
     }
 
@@ -71,7 +74,7 @@ public class MainTeleop extends LinearOpMode {
         robot.wrist.start();
         robot.bucket.start();
         robot.claw.start();
-        robot.linearSlide.start();
+        robot.linearSlide.reset();
     }
 
     public void readController() {
@@ -112,6 +115,10 @@ public class MainTeleop extends LinearOpMode {
     double scaledManualPower, clampedPower;
 
     private void linearSlideControl() {
+        if (gamepad2.right_stick_button) {
+            robot.linearSlide.reset();
+        }
+
         scaledManualPower = gamepad2RightJoystickY / 2; // Scaled joystick input for finer control
 
         // Rising edge detection for dpad_up
@@ -151,6 +158,10 @@ public class MainTeleop extends LinearOpMode {
             } else {
                 robot.linearSlide.linearSlide.setPower(clampedPower);
             }
+        }
+
+        if (!gamepad2.dpad_up && !gamepad2.dpad_down && scaledManualPower == 0) {
+            robot.linearSlide.stop();
         }
     }
 

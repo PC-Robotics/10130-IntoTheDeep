@@ -133,6 +133,8 @@ public class Robot {
                     drivePower - strafePower - turnPower,
                     drivePower + strafePower - turnPower
             }));
+
+            driveBase.updateOdometry();
         }
     }
 
@@ -166,6 +168,8 @@ public class Robot {
                     drivePower - strafePower - turnPower,
                     drivePower + strafePower - turnPower
             }));
+
+            driveBase.updateOdometry();
         }
     }
 
@@ -198,6 +202,8 @@ public class Robot {
                     drivePower - strafePower - turnPower,
                     drivePower + strafePower - turnPower
             }));
+
+            driveBase.updateOdometry();
         }
     }
 }

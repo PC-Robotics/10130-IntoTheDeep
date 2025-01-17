@@ -17,6 +17,7 @@ public class LinearSlide {
     public int positionIndex = 0;
     public boolean inManualMode = false;
 
+
     public LinearSlide(LinearOpMode opMode) {
         this.opMode = opMode;
     }
@@ -31,15 +32,18 @@ public class LinearSlide {
     /**
      * Resets the motor encoder and moves to the starting position.
      */
-    public void start() {
+    public void reset() {
+        linearSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        linearSlide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
 
     /**
      * Stops the linear slide motor.
      */
     public void stop() {
-        linearSlide.setPower(0);
-        linearSlide.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        if (linearSlide.getMode() == DcMotor.RunMode.RUN_USING_ENCODER) {
+            linearSlide.setPower(0);
+        }
     }
 
     /**

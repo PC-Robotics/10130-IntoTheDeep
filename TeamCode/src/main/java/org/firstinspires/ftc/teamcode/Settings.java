@@ -13,7 +13,7 @@ public class Settings {
 
     public static class Trolley {
         public static double IN_POSITION = 0.9;
-        public static double OUT_POSITION = 0.45;
+        public static double OUT_POSITION = 0.6;
     }
 
 
@@ -39,7 +39,7 @@ public class Settings {
 
 
     public static class Claw {
-        public static double OPEN_POSITION = 0.58;
+        public static double OPEN_POSITION = 0.53;
         public static double CLOSED_POSITION = 0.68;
     }
 
@@ -60,7 +60,7 @@ public class Settings {
 
     public static class Bucket {
         public static double PICKUP_POSITION = 0.485;
-        public static double RELEASE_POSITION = 0.52;
+        public static double RELEASE_POSITION = 0.53;
     }
 
 

@@ -18,7 +18,7 @@ public class DriveBase {
 
     public DcMotorEx frontLeft, backLeft, frontRight, backRight;
 
-    public DcMotorEx varticalEncoder, horizontalEncoder;
+    public DcMotorEx verticalEncoder, horizontalEncoder;
 
     private double startingTicksX, startingTicksY;
     public double ticksTraveledX, ticksTraveledY, inchesTraveledX, inchesTraveledY;
@@ -38,14 +38,14 @@ public class DriveBase {
         frontRight = motorInit(opMode.hardwareMap, "frontRight", DcMotor.Direction.REVERSE);
         backRight = motorInit(opMode.hardwareMap, "backRight", DcMotor.Direction.REVERSE);
 
-        varticalEncoder = opMode.hardwareMap.get(DcMotorEx.class, "par");
+        verticalEncoder = opMode.hardwareMap.get(DcMotorEx.class, "par");
         horizontalEncoder = opMode.hardwareMap.get(DcMotorEx.class, "perp");
 
-        varticalEncoder.setDirection(DcMotorSimple.Direction.REVERSE);
+        verticalEncoder.setDirection(DcMotorSimple.Direction.REVERSE);
         horizontalEncoder.setDirection(DcMotorSimple.Direction.FORWARD);
 
-        startingTicksX = varticalEncoder.getCurrentPosition();
-        startingTicksY = horizontalEncoder.getCurrentPosition();
+        startingTicksY = verticalEncoder.getCurrentPosition();
+        startingTicksX = horizontalEncoder.getCurrentPosition();
 
         opMode.telemetry.addData("> (INFO)", "DriveBase Initialized");
         opMode.telemetry.update();
@@ -166,15 +166,15 @@ public class DriveBase {
 
     // ODOMETRY
     public void resetOdometry() {
-        startingTicksY = varticalEncoder.getCurrentPosition();
+        startingTicksY = verticalEncoder.getCurrentPosition();
         startingTicksX = horizontalEncoder.getCurrentPosition();
     }
 
     public void updateOdometry() {
-        ticksTraveledY = varticalEncoder.getCurrentPosition() - startingTicksY;
+        ticksTraveledY = verticalEncoder.getCurrentPosition() - startingTicksY;
         ticksTraveledX = horizontalEncoder.getCurrentPosition() - startingTicksX;
-        inchesTraveledX = ticksTraveledX * Settings.Autonomous.ODOMETRY_WHEEL_IN_PER_TICK;
         inchesTraveledY = ticksTraveledY * Settings.Autonomous.ODOMETRY_WHEEL_IN_PER_TICK;
+        inchesTraveledX = ticksTraveledX * Settings.Autonomous.ODOMETRY_WHEEL_IN_PER_TICK;
     }
 
     public void telemetry() {
