@@ -13,9 +13,9 @@ public final class Utility {
      * This makes sure that the motors won't receive a |value| > 1.0
      *
      * @param powers the array powers for all motors
-     *               modifies the array in place (thanks java)
+     * @return powers array normalized to range [0, 1]
      */
-    public static void normalizePowers(double[] powers) {
+    public static double[] normalizePowers(double[] powers) {
         // no need for check for 0 length array since length is given
         double max = Math.abs(powers[0]);
         for (int i = 1; i < powers.length; i++) {
@@ -28,6 +28,7 @@ public final class Utility {
                 powers[i] /= max;
             }
         }
+        return powers;
     }
 
 

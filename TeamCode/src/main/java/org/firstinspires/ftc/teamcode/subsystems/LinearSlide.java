@@ -4,6 +4,7 @@ import static org.firstinspires.ftc.teamcode.HardwareUtility.motorInit;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
 
 import org.firstinspires.ftc.teamcode.Settings;
 
@@ -12,7 +13,7 @@ import org.firstinspires.ftc.teamcode.Settings;
  */
 public class LinearSlide {
     private final LinearOpMode opMode;
-    public DcMotor linearSlide;
+    public DcMotorEx linearSlide;
     public int positionIndex = 0;
     public boolean inManualMode = false;
 
@@ -47,6 +48,7 @@ public class LinearSlide {
      * @param position Target position in encoder ticks.
      * @param power    Power level for the motor.
      */
+    // TODO: add PIDF to linear slide movement
     public void moveToPosition(int position, double power) {
         linearSlide.setTargetPosition(position);
         linearSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);

@@ -3,7 +3,6 @@ package org.firstinspires.ftc.teamcode;
 import static org.firstinspires.ftc.teamcode.Utility.clamp;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
@@ -67,7 +66,7 @@ public class Robot {
         imu.init();
         driveBase.init();
         linearSlide.init();
-        // trolley.init();
+        trolley.init();
         wrist.init();
         intake.init();
         bucket.init();

@@ -1,7 +1,9 @@
 package org.firstinspires.ftc.teamcode;
 
-import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.CRServo;
+import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
@@ -23,8 +25,8 @@ public class HardwareUtility {
      * @param direction   Direction for the motor
      * @return Configured DcMotor instance
      */
-    public static DcMotor motorInit(HardwareMap hardwareMap, String name, DcMotor.Direction direction) {
-        DcMotor motor = hardwareMap.get(DcMotor.class, name);
+    public static DcMotorEx motorInit(HardwareMap hardwareMap, String name, DcMotorSimple.Direction direction) {
+        DcMotorEx motor = hardwareMap.get(DcMotorEx.class, name);
         motor.setDirection(direction);
         motor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);

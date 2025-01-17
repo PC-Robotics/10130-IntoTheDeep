@@ -55,7 +55,7 @@ public class MainTeleop extends LinearOpMode {
 
             robot.driveBase.fieldCentricDrive(straight, strafe, turn, heading, gamepad1.left_bumper);
             linearSlideControl();
-            // trolleyControl();
+            trolleyControl();
             wristControl();
             intakeControl();
             bucketControl();
@@ -67,7 +67,7 @@ public class MainTeleop extends LinearOpMode {
     }
 
     private void startingPositions() {
-        // robot.trolley.start();
+        robot.trolley.start();
         robot.wrist.start();
         robot.bucket.start();
         robot.claw.start();
@@ -140,19 +140,19 @@ public class MainTeleop extends LinearOpMode {
 
         // Manual control
         if (!gamepad2.dpad_up && !gamepad2.dpad_down && scaledManualPower != 0) {
-            clampedPower = clamp(scaledManualPower, -Settings.LinearSlide.FINE_CONTROL_POWER, Settings.LinearSlide.FINE_CONTROL_POWER);
             robot.linearSlide.linearSlide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+            clampedPower = clamp(scaledManualPower, -Settings.LinearSlide.FINE_CONTROL_POWER, Settings.LinearSlide.FINE_CONTROL_POWER);
             if (
-                    (robot.linearSlide.linearSlide.getCurrentPosition() > Settings.LinearSlide.POSITIONS.get(0) && clampedPower < 0) ||
-                            (robot.linearSlide.linearSlide.getCurrentPosition() < Settings.LinearSlide.POSITIONS.get(Settings.LinearSlide.POSITIONS.length()) && clampedPower > 0)
+                (robot.linearSlide.linearSlide.getCurrentPosition() <= Settings.LinearSlide.POSITIONS.get(0) && clampedPower < 0) ||
+                (robot.linearSlide.linearSlide.getCurrentPosition() >= Settings.LinearSlide.POSITIONS.get(Settings.LinearSlide.POSITIONS.length() - 1) && clampedPower > 0)
             ) {
-                robot.linearSlide.linearSlide.setPower(clampedPower);
-            } else {
                 robot.linearSlide.linearSlide.setPower(0);
+            } else {
+                robot.linearSlide.linearSlide.setPower(clampedPower);
             }
         }
     }
-
 
     private void trolleyControl() {
         double newTrolleyPosition = robot.trolley.getPosition();

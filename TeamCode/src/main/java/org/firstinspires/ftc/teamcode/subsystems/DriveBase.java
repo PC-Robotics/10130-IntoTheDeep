@@ -5,9 +5,9 @@ import static org.firstinspires.ftc.teamcode.Utility.normalizePowers;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.IMU;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
-import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.teamcode.Settings;
 
 /**
@@ -17,6 +17,7 @@ public class DriveBase {
     private LinearOpMode opMode;
 
     public DcMotor frontLeft, backLeft, frontRight, backRight;
+    public DcMotorEx frontLeft, backLeft, frontRight, backRight;
 
     private double[] powers = new double[4];
 
