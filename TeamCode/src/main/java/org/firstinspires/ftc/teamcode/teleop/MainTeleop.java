@@ -16,21 +16,22 @@ import org.firstinspires.ftc.teamcode.Settings;
  * joysticks - mecanum drive
  * bumper left - fine control (half sped)
  * options - reset heading
- * trigger left - trolley go in (values wrong)
+ * trigger left - trolley go in
  * trigger right - trolley go out
- * square - claw close (set to bucket now)
+ * square - claw close
  * circle - claw open
  * <p>
  * Controller 2 - Operator
- * bumper left - wrist go "in" (not working well)
- * bumper right - wrist go "out"
- * trigger right - intake spin
- * trigger left - intake spin backwards
+ * bumper left - intake
+ * bumper right - outtake
+ * trigger right - wrist go "out"
+ * trigger left - wrist go "in"
  * triangle - bucket release (not working)
  * cross - bucket pickup (slow)
- * dpadUp - slide index up (not working)
+ * dpadUp - slide index up
  * dpadDown - slide index down
- * left joystick y - slide up down manual control
+ * right joystick y - slide up down manual control
+ * right joystick press - reset slide
  */
 
 @TeleOp(name = "Main Teleop", group = " Main")
@@ -41,7 +42,7 @@ public class MainTeleop extends LinearOpMode {
     private double straight, turn, strafe, heading;
 
     private double gamepad1LeftTrigger, gamepad1RightTrigger, gamepad2LeftTrigger, gamepad2RightTrigger, gamepad2RightJoystickY;
-    private boolean gamepad2LeftBumper = false, gamepad2RightBumper = false, gamepad2DpadUp = false, gamepad2DpadDown = false;
+    private boolean gamepad2DpadUp = false, gamepad2DpadDown = false, gamepad2LeftTriggerPrevious = false, gamepad2RightTriggerPrevious = false;
 
     public void runOpMode() {
         robot.init();
@@ -180,27 +181,27 @@ public class MainTeleop extends LinearOpMode {
     }
 
     private void wristControl() {
-        if (gamepad2.left_bumper && !gamepad2LeftBumper) {
+        if (gamepad2LeftTrigger != 0 && !gamepad2LeftTriggerPrevious) {
             robot.wrist.moveTowardsPickup();
-            gamepad2LeftBumper = true;
+            gamepad2LeftTriggerPrevious = true;
         } else if (!gamepad2.left_bumper) {
-            gamepad2LeftBumper = false;
+            gamepad2LeftTriggerPrevious = false;
         }
 
-        if (gamepad2.right_bumper && !gamepad2RightBumper) {
+        if (gamepad2RightTrigger != 0 && !gamepad2RightTriggerPrevious) {
             robot.wrist.moveTowardsRelease();
-            gamepad2RightBumper = true;
+            gamepad2RightTriggerPrevious = true;
         } else if (!gamepad2.right_bumper) {
-            gamepad2RightBumper = false;
+            gamepad2RightTriggerPrevious = false;
         }
     }
 
     private void intakeControl() {
         // since the triggers are in the range [0, 1), we can multiply them by the max power to get a percentage of the max power
-        if (gamepad2RightTrigger != 0) {
-            robot.intake.intake(gamepad2RightTrigger * Settings.Intake.MAX_POWER); // intake the sample
-        } else if (gamepad2LeftTrigger != 0) {
-            robot.intake.outtake(gamepad2LeftTrigger * Settings.Intake.MAX_POWER); // outtake the sample
+        if (gamepad2.left_bumper) {
+            robot.intake.intake(Settings.Intake.MAX_POWER); // intake the sample
+        } else if (gamepad2.right_bumper) {
+            robot.intake.outtake(Settings.Intake.MAX_POWER); // outtake the sample
         } else {
             robot.intake.stop();
         }
