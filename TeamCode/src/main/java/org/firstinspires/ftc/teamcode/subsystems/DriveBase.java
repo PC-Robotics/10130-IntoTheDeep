@@ -175,8 +175,8 @@ public class DriveBase implements Subsystem {
     public void updateOdometry() {
         ticksTraveledY = verticalEncoder.getCurrentPosition() - startingTicksY;
         ticksTraveledX = horizontalEncoder.getCurrentPosition() - startingTicksX;
-        inchesTraveledY = ticksTraveledY * Settings.Autonomous.ODOMETRY_WHEEL_IN_PER_TICK;
-        inchesTraveledX = ticksTraveledX * Settings.Autonomous.ODOMETRY_WHEEL_IN_PER_TICK;
+        inchesTraveledY = ticksTraveledY * Settings.Odometry.ODOMETRY_WHEEL_IN_PER_TICK;
+        inchesTraveledX = ticksTraveledX * Settings.Odometry.ODOMETRY_WHEEL_IN_PER_TICK;
     }
 
     @Override
