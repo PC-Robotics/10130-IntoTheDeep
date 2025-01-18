@@ -1,4 +1,6 @@
-package org.firstinspires.ftc.teamcode.subsystems;
+package org.firstinspires.ftc.teamcode.support;
+
+import static org.firstinspires.ftc.teamcode.support.Utility.normalizeAngle_n180_180;
 
 /**
  * PIDF controller
@@ -21,6 +23,7 @@ public class PIDF {
     private double integral, previousError, previousTime;
     private double tolerance, settleStartTime;
     private boolean withinTolerance, isSettled;
+    private boolean isAngular, isDisabled;
 
     public PIDF(double kP, double kI, double kD, double kF, double tolerance, double timeToSettle, double antiWindupRange) {
         this.kP = kP;
@@ -36,6 +39,8 @@ public class PIDF {
         settleStartTime = 0;
         withinTolerance = false;
         isSettled = false;
+        isAngular = false;
+        isDisabled = false;
     }
 
     public PIDF(double kP, double kI, double kD, double kF, double tolerance, double timeToSettle) {
@@ -90,6 +95,30 @@ public class PIDF {
         return isSettled;
     }
 
+    public void setIsAngular(boolean isAngular) {
+        this.isAngular = isAngular;
+    }
+
+    public boolean getIsAngular() {
+        return isAngular;
+    }
+
+    public double getError() {
+        return previousError;
+    }
+
+    public void disable() {
+        isDisabled = true;
+    }
+
+    public void enable() {
+        isDisabled = false;
+    }
+
+    public boolean isDisabled() {
+        return isDisabled;
+    }
+
     public void setCoefficients(double kP, double kI, double kD, double kF) {
         this.kP = kP;
         this.kI = kI;
@@ -98,6 +127,10 @@ public class PIDF {
     }
 
     public double calculate(double targetPosition, double currentPosition, double currentTime) {
+        if (isDisabled) {
+            return 0.0;
+        }
+
         // --- set previous time and calculate change between cycles ---
         // if previous time is 0 (this is the first cycle), set it to the current time
         if (previousTime == 0) {
@@ -110,6 +143,11 @@ public class PIDF {
         // --- check to see if we are settling and have reach the target ---
         // error is how far we are from the target
         double error = targetPosition - currentPosition;
+
+        // stops the robot from spinning around a circle
+        if (isAngular) {
+            error = normalizeAngle_n180_180(error);
+        }
 
         // detect if the error is less than the tolerance
         withinTolerance = Math.abs(error) < tolerance;
