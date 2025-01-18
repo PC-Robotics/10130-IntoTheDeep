@@ -99,6 +99,8 @@ public class Robot {
         intake.init();
         bucket.init();
         claw.init();
+
+        turnPID.setIsAngular(true);
     }
 
     // DRIVE
@@ -135,6 +137,17 @@ public class Robot {
             }));
 
             driveBase.updateOdometry();
+
+            myOpMode.telemetry.addData("Drive Power", drivePower)
+                    .addData("Strafe Power", strafePower)
+                    .addData("Turn Power", turnPower)
+                    .addData("Drive Error", drivePID.getError())
+                    .addData("Strafe Error", strafePID.getError())
+                    .addData("Turn Error", turnPID.getError())
+                    .addData("Target Position", distance_in)
+                    .addData("Current Position", driveBase.inchesTraveledY)
+                    .addData("Heading", imu.getHeading(AngleUnit.DEGREES));
+            myOpMode.telemetry.update();
         }
     }
 
@@ -170,6 +183,17 @@ public class Robot {
             }));
 
             driveBase.updateOdometry();
+
+            myOpMode.telemetry.addData("Drive Power", drivePower)
+                    .addData("Strafe Power", strafePower)
+                    .addData("Turn Power", turnPower)
+                    .addData("Drive Error", drivePID.getError())
+                    .addData("Strafe Error", strafePID.getError())
+                    .addData("Turn Error", turnPID.getError())
+                    .addData("Target Position", distance_in)
+                    .addData("Current Position", driveBase.inchesTraveledX)
+                    .addData("Heading", imu.getHeading(AngleUnit.DEGREES));
+            myOpMode.telemetry.update();
         }
     }
 
@@ -204,6 +228,16 @@ public class Robot {
             }));
 
             driveBase.updateOdometry();
+
+            myOpMode.telemetry.addData("Drive Power", drivePower)
+                    .addData("Strafe Power", strafePower)
+                    .addData("Turn Power", turnPower)
+                    .addData("Drive Error", drivePID.getError())
+                    .addData("Strafe Error", strafePID.getError())
+                    .addData("Turn Error", turnPID.getError())
+                    .addData("Target Position", targetAngle_degrees)
+                    .addData("Current Position", imu.getHeading(AngleUnit.DEGREES));
+            myOpMode.telemetry.update();
         }
     }
 }

@@ -1,13 +1,13 @@
 package org.firstinspires.ftc.teamcode.subsystems;
 
-import static org.firstinspires.ftc.teamcode.HardwareUtility.servoInit;
+import static org.firstinspires.ftc.teamcode.support.HardwareUtility.servoInit;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.teamcode.Settings;
 
-public class Bucket {
+public class Bucket implements Subsystem {
     private LinearOpMode opMode;
 
     public Servo bucket;
@@ -18,10 +18,12 @@ public class Bucket {
         this.opMode = opMode;
     }
 
+    @Override
     public void init() {
         bucket = servoInit(opMode.hardwareMap, "bucket", Servo.Direction.REVERSE);
     }
 
+    @Override
     public void start() {
         pickup();
     }
@@ -36,6 +38,7 @@ public class Bucket {
         positionIndex = 1;
     }
 
+    @Override
     public void telemetry() {
         opMode.telemetry.addData("Bucket Position Index", positionIndex);
     }

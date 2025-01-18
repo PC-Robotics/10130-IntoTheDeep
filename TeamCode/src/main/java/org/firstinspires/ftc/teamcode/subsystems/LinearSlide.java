@@ -1,6 +1,6 @@
 package org.firstinspires.ftc.teamcode.subsystems;
 
-import static org.firstinspires.ftc.teamcode.HardwareUtility.motorInit;
+import static org.firstinspires.ftc.teamcode.support.HardwareUtility.motorInit;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -8,14 +8,23 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 
 import org.firstinspires.ftc.teamcode.Settings;
 
+enum State {
+    MOVING,
+    STOPPED
+}
+
+enum Mode {
+    POSITION,
+    MANUAL
+}
+
 /**
  * LinearSlide subsystem for controlling the robot's linear slide mechanism.
  */
-public class LinearSlide {
+public class LinearSlide implements Subsystem {
     private final LinearOpMode opMode;
     public DcMotorEx linearSlide;
     public int positionIndex = 0;
-    public boolean inManualMode = false;
 
 
     public LinearSlide(LinearOpMode opMode) {
@@ -25,8 +34,14 @@ public class LinearSlide {
     /**
      * Initializes the linear slide motor.
      */
+    @Override
     public void init() {
         linearSlide = motorInit(opMode.hardwareMap, "linearSlide", DcMotor.Direction.REVERSE);
+    }
+
+    @Override
+    public void start() {
+        return;
     }
 
     /**
@@ -40,9 +55,17 @@ public class LinearSlide {
     /**
      * Stops the linear slide motor.
      */
+    // TODO: This causes a lot of current loss when the linear slide is at the bottom. FIX IT (drops 2-2.5 volts)
     public void stop() {
-        if (linearSlide.getMode() == DcMotor.RunMode.RUN_USING_ENCODER) {
-            linearSlide.setPower(0);
+        switch (linearSlide.getMode()) {
+            case RUN_TO_POSITION:
+                linearSlide.setPower(0.1);
+                break;
+            case RUN_USING_ENCODER:
+                linearSlide.setPower(0);
+                break;
+            default:
+                break;
         }
     }
 
@@ -99,6 +122,7 @@ public class LinearSlide {
         linearSlide.setPower(0.05);
     }
 
+    @Override
     public void telemetry() {
         opMode.telemetry.addData("Linear Slide Position Index", positionIndex);
         opMode.telemetry.addData("Linear Slide Encoder", linearSlide.getCurrentPosition());

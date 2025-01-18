@@ -1,13 +1,13 @@
 package org.firstinspires.ftc.teamcode.subsystems;
 
-import static org.firstinspires.ftc.teamcode.HardwareUtility.CRServoInit;
+import static org.firstinspires.ftc.teamcode.support.HardwareUtility.CRServoInit;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.CRServo;
 
 import org.firstinspires.ftc.teamcode.Settings;
 
-public class Intake {
+public class Intake implements Subsystem {
     private LinearOpMode opMode;
 
     public CRServo intake;
@@ -16,8 +16,13 @@ public class Intake {
         this.opMode = opMode;
     }
 
+    @Override
     public void init() {
         intake = CRServoInit(opMode.hardwareMap, "intake", CRServo.Direction.FORWARD);
+    }
+
+    @Override
+    public void start() {
     }
 
     public void intake() {
@@ -40,6 +45,7 @@ public class Intake {
         intake.setPower(0);
     }
 
+    @Override
     public void telemetry() {
         opMode.telemetry.addData("Intake Moving", intake.getPower() != 0);
     }

@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.support;
 
 public final class Utility {
     private Utility() {
@@ -17,13 +17,36 @@ public final class Utility {
      */
     public static double[] normalizePowers(double[] powers) {
         // no need for check for 0 length array since length is given
-        double max = Math.abs(powers[0]);
-        for (int i = 1; i < powers.length; i++) {
-            max = Math.max(max, Math.abs(powers[i]));
+        double max = 0.0;
+        for (double el : powers) {
+            max = Math.max(max, Math.abs(el));
         }
 
         // normalize values to range [0, 1]
         if (max > 1.0) {
+            for (int i = 0; i < powers.length; i++) {
+                powers[i] /= max;
+            }
+        }
+        return powers;
+    }
+
+    /**
+     * Normalize each value in the powers array if any of the values are greater than maxPower.
+     * This makes sure that the motors won't receive a |value| > maxPower
+     *
+     * @param powers the array powers for all motors
+     * @return powers array normalized to range [-maxPower, maxPower]
+     */
+    public static double[] normalizePowers(double[] powers, double maxPower) {
+        // no need for check for 0 length array since length is given
+        double max = 0.0;
+        for (double el : powers) {
+            max = Math.max(max, Math.abs(el));
+        }
+
+        // normalize values to range [0, 1]
+        if (max > maxPower) {
             for (int i = 0; i < powers.length; i++) {
                 powers[i] /= max;
             }
@@ -66,5 +89,24 @@ public final class Utility {
         } else {
             return value;
         }
+    }
+
+    /**
+     * Normalizes an angle to the range [-180, 180).
+     *
+     * @param angle The original angle in degrees.
+     * @return The angle in the range [-180, 180).
+     */
+    public static double normalizeAngle_n180_180(double angle) {
+        // Shift so we can modulo properly
+        double shifted = (angle + 180) % 360;
+
+        // In Java, remainder can be negative, so ensure a positive result
+        if (shifted < 0) {
+            shifted += 360;
+        }
+
+        // Shift back to [-180, 180)
+        return shifted - 180;
     }
 }

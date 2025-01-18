@@ -1,7 +1,7 @@
 package org.firstinspires.ftc.teamcode.subsystems;
 
-import static org.firstinspires.ftc.teamcode.HardwareUtility.motorInit;
-import static org.firstinspires.ftc.teamcode.Utility.normalizePowers;
+import static org.firstinspires.ftc.teamcode.support.HardwareUtility.motorInit;
+import static org.firstinspires.ftc.teamcode.support.Utility.normalizePowers;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -13,7 +13,7 @@ import org.firstinspires.ftc.teamcode.Settings;
 /**
  * DriveBase subsystem implementation for managing the robot's drive motors.
  */
-public class DriveBase {
+public class DriveBase implements Subsystem {
     private LinearOpMode opMode;
 
     public DcMotorEx frontLeft, backLeft, frontRight, backRight;
@@ -32,6 +32,7 @@ public class DriveBase {
     /**
      * Initialize the drive motors and configure their settings.
      */
+    @Override
     public void init() {
         frontLeft = motorInit(opMode.hardwareMap, "frontLeft", DcMotor.Direction.FORWARD);
         backLeft = motorInit(opMode.hardwareMap, "backLeft", DcMotor.Direction.FORWARD);
@@ -54,6 +55,7 @@ public class DriveBase {
     /**
      * Prepare the DriveBase subsystem for operation by setting motors to a safe state.
      */
+    @Override
     public void start() {
         stop(); // Ensure motors are stopped when starting
     }
@@ -177,6 +179,7 @@ public class DriveBase {
         inchesTraveledX = ticksTraveledX * Settings.Autonomous.ODOMETRY_WHEEL_IN_PER_TICK;
     }
 
+    @Override
     public void telemetry() {
         opMode.telemetry.addData("Front Left Power", frontLeft.getPower());
         opMode.telemetry.addData("Back Left Power", backLeft.getPower());

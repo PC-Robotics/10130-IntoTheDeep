@@ -1,13 +1,13 @@
 package org.firstinspires.ftc.teamcode.subsystems;
 
-import static org.firstinspires.ftc.teamcode.HardwareUtility.servoInit;
+import static org.firstinspires.ftc.teamcode.support.HardwareUtility.servoInit;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.teamcode.Settings;
 
-public class Claw {
+public class Claw implements Subsystem {
     private LinearOpMode opMode;
 
     public Servo claw;
@@ -18,10 +18,12 @@ public class Claw {
         this.opMode = opMode;
     }
 
+    @Override
     public void init() {
         claw = servoInit(opMode.hardwareMap, "claw", Servo.Direction.FORWARD);
     }
 
+    @Override
     public void start() {
         close();
     }
@@ -36,6 +38,7 @@ public class Claw {
         positionIndex = 0;
     }
 
+    @Override
     public void telemetry() {
         opMode.telemetry.addData("Claw Position Index", positionIndex);
     }
