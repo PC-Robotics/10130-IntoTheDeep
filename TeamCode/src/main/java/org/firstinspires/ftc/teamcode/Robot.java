@@ -1,7 +1,6 @@
 package org.firstinspires.ftc.teamcode;
 
-import static org.firstinspires.ftc.teamcode.Utility.clamp;
-import static org.firstinspires.ftc.teamcode.Utility.normalizePowers;
+import static org.firstinspires.ftc.teamcode.support.Utility.normalizePowers;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -11,12 +10,12 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.teamcode.subsystems.DriveBase;
 import org.firstinspires.ftc.teamcode.subsystems.LinearSlide;
 import org.firstinspires.ftc.teamcode.subsystems.OurIMU;
-import org.firstinspires.ftc.teamcode.subsystems.PIDF;
 import org.firstinspires.ftc.teamcode.subsystems.Trolley;
 import org.firstinspires.ftc.teamcode.subsystems.Wrist;
 import org.firstinspires.ftc.teamcode.subsystems.Intake;
 import org.firstinspires.ftc.teamcode.subsystems.Bucket;
 import org.firstinspires.ftc.teamcode.subsystems.Claw;
+import org.firstinspires.ftc.teamcode.support.PIDF;
 
 /*
  * Control -
@@ -50,7 +49,7 @@ public class Robot {
     public Claw claw;
     public OurIMU imu;
 
-    private PIDF drivePID, strafePID, turnPID;
+    public PIDF drivePID, strafePID, turnPID;
 
     // Define a constructor that allows the OpMode to pass a reference to itself.
     public Robot(LinearOpMode opMode) {
@@ -65,27 +64,27 @@ public class Robot {
         claw = new Claw(myOpMode);
 
         drivePID = new PIDF(
-                Settings.Autonomous.DrivePID.kP,
-                Settings.Autonomous.DrivePID.kI,
-                Settings.Autonomous.DrivePID.kD,
-                Settings.Autonomous.DrivePID.TOLERANCE,
-                Settings.Autonomous.DrivePID.TIME_TO_SETTLE
+                Settings.DrivePID.kP,
+                Settings.DrivePID.kI,
+                Settings.DrivePID.kD,
+                Settings.DrivePID.TOLERANCE,
+                Settings.DrivePID.TIME_TO_SETTLE
         );
 
         strafePID = new PIDF(
-                Settings.Autonomous.StrafePID.kP,
-                Settings.Autonomous.StrafePID.kI,
-                Settings.Autonomous.StrafePID.kD,
-                Settings.Autonomous.StrafePID.TOLERANCE,
-                Settings.Autonomous.StrafePID.TIME_TO_SETTLE
+                Settings.StrafePID.kP,
+                Settings.StrafePID.kI,
+                Settings.StrafePID.kD,
+                Settings.StrafePID.TOLERANCE,
+                Settings.StrafePID.TIME_TO_SETTLE
         );
 
         turnPID = new PIDF(
-                Settings.Autonomous.TurnPID.kP,
-                Settings.Autonomous.TurnPID.kI,
-                Settings.Autonomous.TurnPID.kD,
-                Settings.Autonomous.TurnPID.TOLERANCE,
-                Settings.Autonomous.TurnPID.TIME_TO_SETTLE
+                Settings.TurnPID.kP,
+                Settings.TurnPID.kI,
+                Settings.TurnPID.kD,
+                Settings.TurnPID.TOLERANCE,
+                Settings.TurnPID.TIME_TO_SETTLE
         );
     }
 
@@ -104,12 +103,19 @@ public class Robot {
     }
 
     // DRIVE
-
     public void driveDistance(double distance_in) {
-        driveDistance(distance_in, Settings.Autonomous.DEFAULT_DRIVE_TIMEOUT_MS);
+        driveDistance(distance_in, Settings.Autonomous.DEFAULT_DRIVE_TIMEOUT_MS, Settings.Autonomous.DEFAULT_DRIVE_MAX_POWER);
+    }
+
+    public void driveDistance(double distance_in, double maxPower) {
+        driveDistance(distance_in, Settings.Autonomous.DEFAULT_DRIVE_TIMEOUT_MS, maxPower);
     }
 
     public void driveDistance(double distance_in, int timeout) {
+        driveDistance(distance_in, timeout, Settings.Autonomous.DEFAULT_DRIVE_MAX_POWER);
+    }
+
+    public void driveDistance(double distance_in, int timeout, double maxPower) {
         double startingTime = timer.milliseconds(); // get the current time
         double currentTime = timer.milliseconds();
         double startingHeading = imu.getHeading(AngleUnit.DEGREES);
@@ -134,7 +140,7 @@ public class Robot {
                     drivePower - strafePower + turnPower,
                     drivePower - strafePower - turnPower,
                     drivePower + strafePower - turnPower
-            }));
+            }, maxPower));
 
             driveBase.updateOdometry();
 
