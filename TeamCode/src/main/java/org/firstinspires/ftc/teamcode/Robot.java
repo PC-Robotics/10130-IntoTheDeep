@@ -2,6 +2,10 @@ package org.firstinspires.ftc.teamcode;
 
 import static org.firstinspires.ftc.teamcode.Utility.clamp;
 
+import androidx.annotation.NonNull;
+
+import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
+import com.acmerobotics.roadrunner.Action;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
@@ -14,6 +18,13 @@ import org.firstinspires.ftc.teamcode.subsystems.LinearSlide;
 import org.firstinspires.ftc.teamcode.subsystems.OurIMU;
 import org.firstinspires.ftc.teamcode.subsystems.Trolley;
 import org.firstinspires.ftc.teamcode.subsystems.Wrist;
+
+enum HANG_SPECIMEN_STATE {
+    IDLE,
+    LOWERING_SLIDE_TO_HANG_SPECIMEN,
+    OPENING_CLAW,
+    LOWERING_SLIDE_TO_START
+}
 
 /*
  * Control -
@@ -154,5 +165,67 @@ public class Robot {
             myOpMode.telemetry.addData("Heading", imu.getHeading(AngleUnit.DEGREES));
             myOpMode.telemetry.update();
         }
+    }
+
+    public class HangSpecimenAction implements Action {
+        HANG_SPECIMEN_STATE state = HANG_SPECIMEN_STATE.IDLE;
+        ElapsedTime clawTimer = new ElapsedTime();
+        double startTime = 0;
+
+        @Override
+        public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+            switch (state) {
+                case IDLE:
+                    state = HANG_SPECIMEN_STATE.LOWERING_SLIDE_TO_HANG_SPECIMEN;
+                    linearSlide.positionIndex = Settings.LinearSlide.POSITIONS.indexOf(Settings.LinearSlide.SPECIMEN_LOWERED_POSITION);
+                    linearSlide.moveToPosition(linearSlide.positionIndex, Settings.LinearSlide.POWER);
+                    return true;
+
+                case LOWERING_SLIDE_TO_HANG_SPECIMEN:
+                    if (!linearSlide.linearSlide.isBusy()) {
+                        state = HANG_SPECIMEN_STATE.OPENING_CLAW;
+                    }
+                    startTime = clawTimer.milliseconds();
+                    return true;
+
+                case OPENING_CLAW:
+                    claw.open();
+                    if (clawTimer.milliseconds() - startTime > 1000) {
+                        state = HANG_SPECIMEN_STATE.LOWERING_SLIDE_TO_START;
+                    }
+                    return true;
+
+                case LOWERING_SLIDE_TO_START:
+                    linearSlide.positionIndex = Settings.LinearSlide.POSITIONS.indexOf(Settings.LinearSlide.STARTING_POSITION);
+                    linearSlide.moveToPosition(linearSlide.positionIndex, Settings.LinearSlide.POWER);
+                    return false;
+
+                default:
+                    return false;
+            }
+        }
+    }
+
+    public Action hangSpecimen() {
+        return new HangSpecimenAction();
+    }
+
+    public class PickupSpecimenAction implements Action {
+        ElapsedTime clawTimer = new ElapsedTime();
+
+        @Override
+        public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+            claw.close();
+            if (clawTimer.milliseconds() > 1000) {
+                linearSlide.moveToPosition(Settings.LinearSlide.STARTING_POSITION + 100, Settings.LinearSlide.POWER);
+                return false;
+            }
+
+            return true;
+        }
+    }
+
+    public Action pickupSpecimen() {
+        return new PickupSpecimenAction();
     }
 }

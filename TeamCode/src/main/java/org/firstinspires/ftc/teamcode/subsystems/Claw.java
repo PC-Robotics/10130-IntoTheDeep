@@ -2,6 +2,11 @@ package org.firstinspires.ftc.teamcode.subsystems;
 
 import static org.firstinspires.ftc.teamcode.HardwareUtility.servoInit;
 
+import androidx.annotation.NonNull;
+
+import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
+import com.acmerobotics.roadrunner.Action;
+import com.acmerobotics.roadrunner.InstantFunction;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.Servo;
 
@@ -38,5 +43,29 @@ public class Claw {
 
     public void telemetry() {
         opMode.telemetry.addData("Claw Position Index", positionIndex);
+    }
+
+    public class OpenClawAction implements Action {
+        @Override
+        public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+            open();
+            return false;
+        }
+    }
+
+    public Action openClaw() {
+        return new OpenClawAction();
+    }
+
+    public class CloseClawAction implements Action {
+        @Override
+        public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+            open();
+            return false;
+        }
+    }
+
+    public Action closeClaw() {
+        return new CloseClawAction();
     }
 }

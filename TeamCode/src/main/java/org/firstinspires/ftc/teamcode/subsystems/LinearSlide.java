@@ -6,6 +6,7 @@ import androidx.annotation.NonNull;
 
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
+import com.acmerobotics.roadrunner.InstantFunction;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
@@ -102,11 +103,29 @@ public class LinearSlide {
         opMode.telemetry.addData("Linear Slide Encoder", linearSlide.getCurrentPosition());
     }
 
-    public class LiftToPositionAction implements Action {
-
+    public class RaiseLinearSlideToHangSpecimenAction implements Action {
         @Override
         public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+            positionIndex = Settings.LinearSlide.POSITIONS.indexOf(Settings.LinearSlide.SPECIMEN_APPROACH_POSITION);
+            moveToPosition(Settings.LinearSlide.POSITIONS.get(positionIndex), Settings.LinearSlide.POWER);
             return false;
         }
+    }
+
+    public Action raiseLinearSlideToHangSpecimen() {
+        return new RaiseLinearSlideToHangSpecimenAction();
+    }
+
+    public class LowerLinearSlideToStartAction implements Action {
+        @Override
+        public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+            positionIndex = Settings.LinearSlide.POSITIONS.indexOf(Settings.LinearSlide.STARTING_POSITION);
+            moveToPosition(Settings.LinearSlide.POSITIONS.get(positionIndex), Settings.LinearSlide.POWER);
+            return false;
+        }
+    }
+
+    public Action lowerLinearSlideToStart() {
+        return new LowerLinearSlideToStartAction();
     }
 }
