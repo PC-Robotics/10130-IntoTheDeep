@@ -3,19 +3,17 @@ package org.firstinspires.ftc.teamcode;
 import static org.firstinspires.ftc.teamcode.Utility.clamp;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
-
+import org.firstinspires.ftc.teamcode.subsystems.Bucket;
+import org.firstinspires.ftc.teamcode.subsystems.Claw;
 import org.firstinspires.ftc.teamcode.subsystems.DriveBase;
+import org.firstinspires.ftc.teamcode.subsystems.Intake;
 import org.firstinspires.ftc.teamcode.subsystems.LinearSlide;
 import org.firstinspires.ftc.teamcode.subsystems.OurIMU;
 import org.firstinspires.ftc.teamcode.subsystems.Trolley;
 import org.firstinspires.ftc.teamcode.subsystems.Wrist;
-import org.firstinspires.ftc.teamcode.subsystems.Intake;
-import org.firstinspires.ftc.teamcode.subsystems.Bucket;
-import org.firstinspires.ftc.teamcode.subsystems.Claw;
 
 /*
  * Control -

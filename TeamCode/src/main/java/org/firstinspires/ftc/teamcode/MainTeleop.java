@@ -2,7 +2,6 @@ package org.firstinspires.ftc.teamcode;
 
 import static org.firstinspires.ftc.teamcode.Utility.applyDeadzone;
 import static org.firstinspires.ftc.teamcode.Utility.clamp;
-import static org.firstinspires.ftc.teamcode.Utility.normalizePowers;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;

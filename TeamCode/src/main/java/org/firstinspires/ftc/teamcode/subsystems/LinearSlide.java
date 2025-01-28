@@ -2,6 +2,10 @@ package org.firstinspires.ftc.teamcode.subsystems;
 
 import static org.firstinspires.ftc.teamcode.HardwareUtility.motorInit;
 
+import androidx.annotation.NonNull;
+
+import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
+import com.acmerobotics.roadrunner.Action;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
@@ -96,5 +100,13 @@ public class LinearSlide {
     public void telemetry() {
         opMode.telemetry.addData("Linear Slide Position Index", positionIndex);
         opMode.telemetry.addData("Linear Slide Encoder", linearSlide.getCurrentPosition());
+    }
+
+    public class LiftToPositionAction implements Action {
+
+        @Override
+        public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+            return false;
+        }
     }
 }
