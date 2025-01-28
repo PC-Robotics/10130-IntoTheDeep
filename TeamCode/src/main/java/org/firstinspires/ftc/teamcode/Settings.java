@@ -25,8 +25,8 @@ public class Settings {
         public static int FIRST_BUCKET_POSITION = 2700;
         public static int SECOND_BUCKET_POSITION = 4100;
 
-        public static int SPECIMEN_LOWERED_POSITION = 1375;
-        public static int SPECIMEN_APPROACH_POSITION = 1800;
+        public static int SPECIMEN_LOWERED_POSITION = 1250;
+        public static int SPECIMEN_APPROACH_POSITION = 1700;
 
         // Immutable list of position presets
         public static final List<Integer> POSITIONS = List.of(
@@ -39,8 +39,8 @@ public class Settings {
 
 
     public static class Claw {
-        public static double OPEN_POSITION = 0.58;
-        public static double CLOSED_POSITION = 0.68;
+        public static double OPEN_POSITION = 1;
+        public static double CLOSED_POSITION = 0;
     }
 
 
@@ -59,8 +59,8 @@ public class Settings {
 
 
     public static class Bucket {
-        public static double PICKUP_POSITION = 0.485;
-        public static double RELEASE_POSITION = 0.52;
+        public static double PICKUP_POSITION = 0.514;
+        public static double RELEASE_POSITION = 0.48;
     }
 
 

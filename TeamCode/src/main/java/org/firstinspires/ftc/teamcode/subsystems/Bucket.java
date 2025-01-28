@@ -19,7 +19,7 @@ public class Bucket {
     }
 
     public void init() {
-        bucket = servoInit(opMode.hardwareMap, "bucket", Servo.Direction.REVERSE);
+        bucket = servoInit(opMode.hardwareMap, "bucket", Servo.Direction.FORWARD);
     }
 
     public void start() {

@@ -22,7 +22,9 @@ import org.firstinspires.ftc.teamcode.subsystems.Wrist;
 enum HANG_SPECIMEN_STATE {
     IDLE,
     LOWERING_SLIDE_TO_HANG_SPECIMEN,
+    SLIDE_AT_HANG_SPECIMEN,
     OPENING_CLAW,
+    CLAW_OPENED,
     LOWERING_SLIDE_TO_START
 }
 
@@ -170,7 +172,6 @@ public class Robot {
     public class HangSpecimenAction implements Action {
         HANG_SPECIMEN_STATE state = HANG_SPECIMEN_STATE.IDLE;
         ElapsedTime clawTimer = new ElapsedTime();
-        double startTime = 0;
 
         @Override
         public boolean run(@NonNull TelemetryPacket telemetryPacket) {
@@ -185,12 +186,16 @@ public class Robot {
                     if (!linearSlide.linearSlide.isBusy()) {
                         state = HANG_SPECIMEN_STATE.OPENING_CLAW;
                     }
-                    startTime = clawTimer.milliseconds();
+                    return true;
+
+                case SLIDE_AT_HANG_SPECIMEN:
+                    clawTimer.reset();
+                    claw.openClaw();
+                    state = HANG_SPECIMEN_STATE.OPENING_CLAW;
                     return true;
 
                 case OPENING_CLAW:
-                    claw.open();
-                    if (clawTimer.milliseconds() - startTime > 1000) {
+                    if (clawTimer.milliseconds() > 1000) {
                         state = HANG_SPECIMEN_STATE.LOWERING_SLIDE_TO_START;
                     }
                     return true;
@@ -215,7 +220,7 @@ public class Robot {
 
         @Override
         public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-            claw.close();
+            claw.closeClaw();
             if (clawTimer.milliseconds() > 1000) {
                 linearSlide.moveToPosition(Settings.LinearSlide.STARTING_POSITION + 100, Settings.LinearSlide.POWER);
                 return false;

@@ -13,14 +13,18 @@ public class FourSpecRoadrunnerAuto extends LinearOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException {
+        robot.init();
         robot.imu.resetYaw();
-        Actions.runBlocking(robot.claw.closeClaw());
+
+        robot.claw.start();
+        robot.wrist.start();
+        robot.bucket.start();
+        robot.linearSlide.start();
 
         Pose2d initialPose = new Pose2d(0, -72 + 15.0 / 2, Math.toRadians(270));
         MecanumDrive drive = new MecanumDrive(hardwareMap, initialPose);
 
         waitForStart();
-
 
         Actions.runBlocking(
                 drive.actionBuilder(initialPose)
@@ -38,9 +42,6 @@ public class FourSpecRoadrunnerAuto extends LinearOpMode {
                         .splineToSplineHeading(new Pose2d(42, -10, Math.toRadians(90)), Math.toRadians(0))
                         .splineToConstantHeading(new Vector2d(48, -15), Math.toRadians(270))
                         .strafeTo(new Vector2d(46, -55))
-
-                        // proactively open claw
-                        .afterTime(0, robot.claw.openClaw())
 
                         // push middle spec to observation zone
                         .strafeTo(new Vector2d(46, -15))
@@ -75,7 +76,7 @@ public class FourSpecRoadrunnerAuto extends LinearOpMode {
 
                         // hang spec #4
                         .setReversed(false)
-                        .splineToSplineHeading(new Pose2d(6, -35, Math.toRadians(270)), Math.toRadians(90))
+                        .splineToSplineHeading(new Pose2d(-1.5, -35, Math.toRadians(270)), Math.toRadians(90))
                         .stopAndAdd(robot.hangSpecimen())
 
                         // park

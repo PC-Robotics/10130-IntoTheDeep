@@ -60,7 +60,7 @@ public class Claw {
     public class CloseClawAction implements Action {
         @Override
         public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-            open();
+            close();
             return false;
         }
     }
