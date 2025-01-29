@@ -18,15 +18,15 @@ public class Settings {
 
 
     public static class LinearSlide {
-        public static double POWER = 0.66;
+        public static double POWER = 1.0;
         public static double FINE_CONTROL_POWER = 0.33;
 
-        public static int STARTING_POSITION = 10;
+        public static int STARTING_POSITION = 50;
         public static int FIRST_BUCKET_POSITION = 2700;
         public static int SECOND_BUCKET_POSITION = 4100;
 
-        public static int SPECIMEN_LOWERED_POSITION = 1375;
-        public static int SPECIMEN_APPROACH_POSITION = 1800;
+        public static int SPECIMEN_LOWERED_POSITION = 1250;
+        public static int SPECIMEN_APPROACH_POSITION = 1700;
 
         // Immutable list of position presets
         public static final List<Integer> POSITIONS = List.of(
@@ -39,15 +39,15 @@ public class Settings {
 
 
     public static class Claw {
-        public static double OPEN_POSITION = 0.5;
-        public static double CLOSED_POSITION = 0.68;
+        public static double OPEN_POSITION = 1;
+        public static double CLOSED_POSITION = 0;
     }
 
 
     public static class Wrist {
-        public static double INTAKE_POSITION = 0.7;
-        public static double RELEASE_POSITION = 0.0;
-        public static double DRIVING_POSITION = 0.22;
+        public static double INTAKE_POSITION = 0.08;
+        public static double RELEASE_POSITION = 0.8;
+        public static double DRIVING_POSITION = 0.5;
 
         // Immutable list of wrist positions
         public static final List<Double> POSITIONS = List.of(
@@ -65,7 +65,7 @@ public class Settings {
 
 
     public static class Intake {
-        public static double MAX_POWER = 0.33;
+        public static double MAX_POWER = 0.5;
     }
 
 

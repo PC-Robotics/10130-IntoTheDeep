@@ -2,9 +2,6 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-
-import java.util.Set;
 
 @Autonomous(name="Main Autonomous", group=" Main", preselectTeleOp="Main Teleop")
 public class MainAutonomous extends LinearOpMode {
