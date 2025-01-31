@@ -39,7 +39,7 @@ public class MainTeleop extends LinearOpMode {
     private double straight, turn, strafe, heading;
 
     private double gamepad1LeftTrigger, gamepad1RightTrigger, gamepad2LeftTrigger, gamepad2RightTrigger, gamepad2RightJoystickY;
-    private boolean gamepad2LeftBumper = false, gamepad2RightBumper = false, gamepad2DpadUp = false, gamepad2DpadDown = false;
+    private boolean gamepad2LeftBumper = false, gamepad2RightBumper = false, gamepad2DpadRight = false, gamepad2DpadLeft = false;
 
     public void runOpMode() {
         robot.init();
@@ -54,7 +54,7 @@ public class MainTeleop extends LinearOpMode {
 
             robot.driveBase.fieldCentricDrive(straight, strafe, turn, heading, gamepad1.left_bumper);
             linearSlideControl();
-            // trolleyControl();
+            trolleyControl();
             wristControl();
             intakeControl();
             bucketControl();
@@ -66,7 +66,7 @@ public class MainTeleop extends LinearOpMode {
     }
 
     private void startingPositions() {
-        // robot.trolley.start();
+        robot.trolley.start();
         robot.wrist.start();
         robot.bucket.start();
         robot.claw.start();
@@ -113,41 +113,45 @@ public class MainTeleop extends LinearOpMode {
     private void linearSlideControl() {
         scaledManualPower = gamepad2RightJoystickY / 2; // Scaled joystick input for finer control
 
+        if (gamepad2.right_stick_button) {
+            robot.linearSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        }
+
         // Rising edge detection for dpad_up
-        if (gamepad2.dpad_up && !gamepad2DpadUp) {
-            gamepad2DpadUp = true;
+        if (gamepad2.dpad_right && !gamepad2DpadRight) {
+            gamepad2DpadRight = true;
             if (robot.linearSlide.positionIndex == 0 && robot.wrist.positionIndex == 2) {
                 robot.wrist.moveToPositionIndex(1);
                 sleep(50);
             }
             robot.linearSlide.increasePosition(Settings.LinearSlide.POWER);
-        } else if (!gamepad2.dpad_up) {
-            gamepad2DpadUp = false;
+        } else if (!gamepad2.dpad_right) {
+            gamepad2DpadRight = false;
         }
 
         // Rising edge detection for dpad_down
-        if (gamepad2.dpad_down && !gamepad2DpadDown) {
-            gamepad2DpadDown = true;
+        if (gamepad2.dpad_left && !gamepad2DpadLeft) {
+            gamepad2DpadLeft = true;
             if (robot.linearSlide.positionIndex == 1 && robot.wrist.positionIndex == 2) {
                 robot.wrist.moveToPositionIndex(1);
                 sleep(50);
             }
             robot.linearSlide.decreasePosition(Settings.LinearSlide.POWER);
-        } else if (!gamepad2.dpad_down) {
-            gamepad2DpadDown = false;
+        } else if (!gamepad2.dpad_left) {
+            gamepad2DpadLeft = false;
         }
 
         // Manual control
-        if (!gamepad2.dpad_up && !gamepad2.dpad_down && scaledManualPower != 0) {
+        if (!gamepad2.dpad_right && !gamepad2.dpad_left && scaledManualPower != 0) {
             clampedPower = clamp(scaledManualPower, -Settings.LinearSlide.FINE_CONTROL_POWER, Settings.LinearSlide.FINE_CONTROL_POWER);
-            robot.linearSlide.linearSlide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            robot.linearSlide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             if (
-                    (robot.linearSlide.linearSlide.getCurrentPosition() > Settings.LinearSlide.POSITIONS.get(0) && clampedPower < 0) ||
-                            (robot.linearSlide.linearSlide.getCurrentPosition() < Settings.LinearSlide.POSITIONS.get(Settings.LinearSlide.POSITIONS.length()) && clampedPower > 0)
+                    (robot.linearSlide.getCurrentPosition() > Settings.LinearSlide.POSITIONS.get(0) && clampedPower < 0) ||
+                            (robot.linearSlide.getCurrentPosition() < Settings.LinearSlide.POSITIONS.get(Settings.LinearSlide.POSITIONS.length()) && clampedPower > 0)
             ) {
-                robot.linearSlide.linearSlide.setPower(clampedPower);
+                robot.linearSlide.setPower(clampedPower);
             } else {
-                robot.linearSlide.linearSlide.setPower(0);
+                robot.linearSlide.setPower(0);
             }
         }
     }
@@ -167,27 +171,21 @@ public class MainTeleop extends LinearOpMode {
     }
 
     private void wristControl() {
-        if (gamepad2.left_bumper && !gamepad2LeftBumper) {
-            robot.wrist.moveTowardsPickup();
-            gamepad2LeftBumper = true;
-        } else if (!gamepad2.left_bumper) {
-            gamepad2LeftBumper = false;
-        }
-
-        if (gamepad2.right_bumper && !gamepad2RightBumper) {
-            robot.wrist.moveTowardsRelease();
-            gamepad2RightBumper = true;
-        } else if (!gamepad2.right_bumper) {
-            gamepad2RightBumper = false;
+        if (gamepad2RightTrigger > 0) {
+            robot.wrist.moveToPositionIndex(0);
+        } else if (gamepad2LeftTrigger > 0) {
+            robot.wrist.moveToPositionIndex(2);
+        } else if (gamepad2.dpad_up) {
+            robot.wrist.moveToPositionIndex(1);
         }
     }
 
     private void intakeControl() {
         // since the triggers are in the range [0, 1), we can multiply them by the max power to get a percentage of the max power
-        if (gamepad2RightTrigger != 0) {
-            robot.intake.intake(gamepad2RightTrigger * Settings.Intake.MAX_POWER); // intake the sample
-        } else if (gamepad2LeftTrigger != 0) {
-            robot.intake.outtake(gamepad2LeftTrigger * Settings.Intake.MAX_POWER); // outtake the sample
+        if (gamepad2.right_bumper) {
+            robot.intake.intake(Settings.Intake.MAX_POWER); // intake the sample
+        } else if (gamepad2.left_bumper) {
+            robot.intake.outtake(Settings.Intake.MAX_POWER); // outtake the sample
         } else {
             robot.intake.stop();
         }

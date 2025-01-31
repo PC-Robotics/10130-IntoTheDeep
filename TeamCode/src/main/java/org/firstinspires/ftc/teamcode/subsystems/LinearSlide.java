@@ -98,6 +98,24 @@ public class LinearSlide {
         linearSlide.setPower(0.05);
     }
 
+    public boolean isBusy() {
+        return linearSlide.isBusy();
+    }
+
+    public void setPower(double power) {
+        linearSlide.setPower(power);
+    }
+
+    public int getCurrentPosition() {
+        return linearSlide.getCurrentPosition();
+    }
+
+    public void setMode(DcMotor.RunMode mode) {
+        linearSlide.setMode(mode);
+    }
+
+
+
     public void telemetry() {
         opMode.telemetry.addData("Linear Slide Position Index", positionIndex);
         opMode.telemetry.addData("Linear Slide Encoder", linearSlide.getCurrentPosition());

@@ -16,42 +16,36 @@ public class FourSpecAuto {
                 // Set bot constraints: maxVel, maxAccel, maxAngVel, maxAngAccel, track width
                 .setConstraints(60, 60, Math.toRadians(180), Math.toRadians(180), 15)
                 .followTrajectorySequence(drive -> drive.trajectorySequenceBuilder(new Pose2d(0, -72 + 15.0 / 2, Math.toRadians(270)))
-                        .strafeTo(new Vector2d(0, -32))
+                        .strafeTo(new Vector2d(0, -35))
 
                         .setReversed(false)
                         .splineToConstantHeading(new Vector2d(33, -40), Math.toRadians(90))
-                        .splineToSplineHeading(new Pose2d(36, -15, Math.toRadians(10)), Math.toRadians(90))
-                        .splineToSplineHeading(new Pose2d(41, -10, Math.toRadians(90)), Math.toRadians(0))
-                        .splineToConstantHeading(new Vector2d(46, -15), Math.toRadians(270))
+                        .splineToSplineHeading(new Pose2d(34, -13, Math.toRadians(10)), Math.toRadians(90))
+                        .splineToSplineHeading(new Pose2d(42, -10, Math.toRadians(90)), Math.toRadians(0))
+                        .splineToConstantHeading(new Vector2d(48, -15), Math.toRadians(270))
                         .strafeTo(new Vector2d(46, -55))
 
                         .strafeTo(new Vector2d(46, -15))
                         .splineToConstantHeading(new Vector2d(57, -15), Math.toRadians(270))
-                        .strafeTo(new Vector2d(57, -50))
+                        .strafeTo(new Vector2d(54, -54))
 
-                        .setTangent(Math.toRadians(90))
-                        .splineToConstantHeading(new Vector2d(40, -72 + 15.0 / 2), Math.toRadians(270))
-
-                        .waitSeconds(1)
+                        .setTangent(Math.toRadians(60))
+                        .splineToConstantHeading(new Vector2d(40, -72 + 9), Math.toRadians(270))
 
                         .setReversed(false)
-                        .splineToSplineHeading(new Pose2d(0, -30, Math.toRadians(270)), Math.toRadians(90))
-                        .waitSeconds(1)
-                        .lineToSplineHeading(new Pose2d(40, -72 + 15.0 / 2, Math.toRadians(90)))
+                        .splineToSplineHeading(new Pose2d(-3, -35, Math.toRadians(270)), Math.toRadians(90))
 
-                        .waitSeconds(1)
+                        .splineToSplineHeading(new Pose2d(40, -72 + 9, Math.toRadians(90)), Math.toRadians(270))
 
                         .setReversed(false)
-                        .splineToSplineHeading(new Pose2d(0, -30, Math.toRadians(270)), Math.toRadians(90))
-                        .waitSeconds(1)
-                        .lineToSplineHeading(new Pose2d(40, -72 + 15.0 / 2, Math.toRadians(90)))
+                        .splineToSplineHeading(new Pose2d(3, -35, Math.toRadians(270)), Math.toRadians(90))
 
-                        .waitSeconds(1)
+                        .splineToSplineHeading(new Pose2d(40, -72 + 9, Math.toRadians(90)), Math.toRadians(270))
 
                         .setReversed(false)
-                        .splineToSplineHeading(new Pose2d(0, -30, Math.toRadians(270)), Math.toRadians(90))
-                        .waitSeconds(1)
-                        .strafeTo(new Vector2d(40, -50))
+                        .splineToSplineHeading(new Pose2d(-1.5, -35, Math.toRadians(270)), Math.toRadians(90))
+
+                        .strafeTo(new Vector2d(60, -55))
                         .build());
 
         meepMeep.setBackground(org.rowlandhall.meepmeep.MeepMeep.Background.FIELD_INTOTHEDEEP_JUICE_DARK)

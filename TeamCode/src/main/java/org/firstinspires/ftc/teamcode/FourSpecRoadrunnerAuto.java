@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.acmerobotics.roadrunner.Pose2d;
+import com.acmerobotics.roadrunner.SequentialAction;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
@@ -14,6 +15,11 @@ public class FourSpecRoadrunnerAuto extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
         robot.init();
+
+        robot.claw.open();
+        sleep(2000);
+        robot.claw.close();
+
         robot.imu.resetYaw();
 
         robot.claw.start();

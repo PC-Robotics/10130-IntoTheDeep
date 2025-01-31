@@ -33,6 +33,7 @@ enum HANG_SPECIMEN_STATE {
  *      Servo -
  *          0: wrist
  *          2: (CR) intake
+ *          5: wrist
  *      Motors -
  *          0: rightFront
  *          1: rightBack
@@ -78,7 +79,7 @@ public class Robot {
         imu.init();
         driveBase.init();
         linearSlide.init();
-        // trolley.init();
+        trolley.init();
         wrist.init();
         intake.init();
         bucket.init();
@@ -170,27 +171,32 @@ public class Robot {
     }
 
     public class HangSpecimenAction implements Action {
-        HANG_SPECIMEN_STATE state = HANG_SPECIMEN_STATE.IDLE;
-        ElapsedTime clawTimer = new ElapsedTime();
+        HANG_SPECIMEN_STATE state;
+        ElapsedTime clawTimer;
+
+        public HangSpecimenAction() {
+            state = HANG_SPECIMEN_STATE.IDLE;
+            clawTimer = new ElapsedTime();
+        }
 
         @Override
         public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+            telemetryPacket.addLine(state.toString());
             switch (state) {
                 case IDLE:
+                    linearSlide.moveToPosition(Settings.LinearSlide.SPECIMEN_LOWERED_POSITION, Settings.LinearSlide.POWER);
                     state = HANG_SPECIMEN_STATE.LOWERING_SLIDE_TO_HANG_SPECIMEN;
-                    linearSlide.positionIndex = Settings.LinearSlide.POSITIONS.indexOf(Settings.LinearSlide.SPECIMEN_LOWERED_POSITION);
-                    linearSlide.moveToPosition(linearSlide.positionIndex, Settings.LinearSlide.POWER);
                     return true;
 
                 case LOWERING_SLIDE_TO_HANG_SPECIMEN:
-                    if (!linearSlide.linearSlide.isBusy()) {
+                    if (!linearSlide.isBusy()) {
                         state = HANG_SPECIMEN_STATE.OPENING_CLAW;
                     }
                     return true;
 
                 case SLIDE_AT_HANG_SPECIMEN:
                     clawTimer.reset();
-                    claw.openClaw();
+                    claw.open();
                     state = HANG_SPECIMEN_STATE.OPENING_CLAW;
                     return true;
 
@@ -218,9 +224,13 @@ public class Robot {
     public class PickupSpecimenAction implements Action {
         ElapsedTime clawTimer = new ElapsedTime();
 
+        public PickupSpecimenAction() {
+            clawTimer.reset();
+        }
+
         @Override
         public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-            claw.closeClaw();
+            claw.close();
             if (clawTimer.milliseconds() > 1000) {
                 linearSlide.moveToPosition(Settings.LinearSlide.STARTING_POSITION + 100, Settings.LinearSlide.POWER);
                 return false;

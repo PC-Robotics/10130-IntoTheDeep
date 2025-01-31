@@ -29,8 +29,6 @@ public class Trolley {
     public void setPosition(double position) {
         leftTrolley.setPosition(position);
         rightTrolley.setPosition(position);
-        opMode.telemetry.addData("Left Trolley Position", leftTrolley.getPosition());
-        opMode.telemetry.addData("Right Trolley Position", rightTrolley.getPosition());
         opMode.telemetry.update();
     }
 

@@ -41,6 +41,10 @@ public class Claw {
         positionIndex = 0;
     }
 
+    public void setPosition(double position) {
+        claw.setPosition(position);
+    }
+
     public void telemetry() {
         opMode.telemetry.addData("Claw Position Index", positionIndex);
     }
