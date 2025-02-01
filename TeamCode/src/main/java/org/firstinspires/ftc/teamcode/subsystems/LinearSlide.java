@@ -56,6 +56,12 @@ public class LinearSlide {
         linearSlide.setTargetPosition(position);
         linearSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         linearSlide.setPower(power);
+
+        if (linearSlide.getTargetPosition() <= Settings.LinearSlide.STARTING_POSITION) {
+            linearSlide.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+        } else {
+            linearSlide.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        }
     }
 
     /**

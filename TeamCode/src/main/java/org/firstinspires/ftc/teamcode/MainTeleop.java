@@ -147,7 +147,7 @@ public class MainTeleop extends LinearOpMode {
             robot.linearSlide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             if (
                     (robot.linearSlide.getCurrentPosition() > Settings.LinearSlide.POSITIONS.get(0) && clampedPower < 0) ||
-                            (robot.linearSlide.getCurrentPosition() < Settings.LinearSlide.POSITIONS.get(Settings.LinearSlide.POSITIONS.length()) && clampedPower > 0)
+                            (robot.linearSlide.getCurrentPosition() < Settings.LinearSlide.POSITIONS.get(Settings.LinearSlide.POSITIONS.length() - 1) && clampedPower > 0)
             ) {
                 robot.linearSlide.setPower(clampedPower);
             } else {

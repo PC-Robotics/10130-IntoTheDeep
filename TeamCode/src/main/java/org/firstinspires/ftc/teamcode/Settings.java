@@ -12,8 +12,8 @@ public class Settings {
     public static double DEADZONE_THRESHOLD = 0.1;
 
     public static class Trolley {
-        public static double IN_POSITION = 1.0;
-        public static double OUT_POSITION = 0.55;
+        public static double IN_POSITION = .75;
+        public static double OUT_POSITION = 0.456;
     }
 
 
@@ -21,7 +21,7 @@ public class Settings {
         public static double POWER = 1.0;
         public static double FINE_CONTROL_POWER = 0.33;
 
-        public static int STARTING_POSITION = 50;
+        public static int STARTING_POSITION = 0;
         public static int FIRST_BUCKET_POSITION = 2700;
         public static int SECOND_BUCKET_POSITION = 4100;
 

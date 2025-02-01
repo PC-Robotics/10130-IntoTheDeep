@@ -18,8 +18,8 @@ public class Trolley {
     }
 
     public void init() {
-        leftTrolley = servoInit(opMode.hardwareMap, "left", Servo.Direction.REVERSE);
-        rightTrolley = servoInit(opMode.hardwareMap, "right", Servo.Direction.REVERSE);
+        leftTrolley = servoInit(opMode.hardwareMap, "left", Servo.Direction.FORWARD);
+        rightTrolley = servoInit(opMode.hardwareMap, "right", Servo.Direction.FORWARD);
     }
 
     public void start() {

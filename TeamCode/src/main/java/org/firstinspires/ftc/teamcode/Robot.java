@@ -35,10 +35,10 @@ enum HANG_SPECIMEN_STATE {
  *          2: (CR) intake
  *          5: wrist
  *      Motors -
- *          0: rightFront
- *          1: rightBack
- *          2: leftFront
- *          3: leftBack
+ *          0: backRight(new)
+ *          1: frontRight
+ *          2: backLeft(new)
+ *          3: frontLeft(new)
  * Expansion -
  *      Servo -
  *          0: right
