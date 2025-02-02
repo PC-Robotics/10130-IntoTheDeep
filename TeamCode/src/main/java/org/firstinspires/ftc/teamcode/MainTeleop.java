@@ -154,6 +154,10 @@ public class MainTeleop extends LinearOpMode {
                 robot.linearSlide.setPower(0);
             }
         }
+
+        if (!gamepad2.dpad_right && !gamepad2.dpad_left && scaledManualPower == 0) {
+            robot.linearSlide.stop();
+        }
     }
 
 

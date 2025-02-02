@@ -43,8 +43,8 @@ public class FourSpecRoadrunnerAuto extends LinearOpMode {
 
                         // push leftmost spec to observation zone
                         .setReversed(false)
-                        .splineToConstantHeading(new Vector2d(33, -40), Math.toRadians(90))
-                        .splineToSplineHeading(new Pose2d(34, -13, Math.toRadians(10)), Math.toRadians(90))
+                        .splineToConstantHeading(new Vector2d(35, -40), Math.toRadians(90))
+                        .splineToSplineHeading(new Pose2d(37, -13, Math.toRadians(10)), Math.toRadians(90))
                         .splineToSplineHeading(new Pose2d(42, -10, Math.toRadians(90)), Math.toRadians(0))
                         .splineToConstantHeading(new Vector2d(48, -15), Math.toRadians(270))
                         .strafeTo(new Vector2d(46, -55))
