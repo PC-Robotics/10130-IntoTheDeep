@@ -230,8 +230,8 @@ public class Robot {
         @Override
         public boolean run(@NonNull TelemetryPacket telemetryPacket) {
             claw.close();
-            if (clawTimer.milliseconds() > 1000) {
-                linearSlide.moveToPosition(Settings.LinearSlide.STARTING_POSITION + 100, Settings.LinearSlide.POWER);
+            if (clawTimer.milliseconds() > 400) {
+                linearSlide.moveToPosition(Settings.LinearSlide.STARTING_POSITION + 50, Settings.LinearSlide.POWER);
                 return false;
             }
 
