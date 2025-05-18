@@ -6,6 +6,9 @@ import androidx.annotation.NonNull;
 
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
+import com.acmerobotics.roadrunner.SequentialAction;
+import com.acmerobotics.roadrunner.SleepAction;
+import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
@@ -23,8 +26,6 @@ enum HANG_SPECIMEN_STATE {
     IDLE,
     LOWERING_SLIDE_TO_HANG_SPECIMEN,
     SLIDE_AT_HANG_SPECIMEN,
-    OPENING_CLAW,
-    CLAW_OPENED,
     LOWERING_SLIDE_TO_START
 }
 
@@ -181,7 +182,6 @@ public class Robot {
 
         @Override
         public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-            telemetryPacket.addLine(state.toString());
             switch (state) {
                 case IDLE:
                     linearSlide.moveToPosition(Settings.LinearSlide.SPECIMEN_LOWERED_POSITION, Settings.LinearSlide.POWER);
@@ -189,21 +189,20 @@ public class Robot {
                     return true;
 
                 case LOWERING_SLIDE_TO_HANG_SPECIMEN:
-                    if (!linearSlide.isBusy()) {
-                        state = HANG_SPECIMEN_STATE.OPENING_CLAW;
+                    if ((linearSlide.getCurrentPosition() - Settings.LinearSlide.SPECIMEN_LOWERED_POSITION) < 10) {
+                        state = HANG_SPECIMEN_STATE.SLIDE_AT_HANG_SPECIMEN;
                     }
                     return true;
 
                 case SLIDE_AT_HANG_SPECIMEN:
                     clawTimer.reset();
-                    claw.open();
-                    state = HANG_SPECIMEN_STATE.OPENING_CLAW;
-                    return true;
-
-                case OPENING_CLAW:
-                    if (clawTimer.milliseconds() > 1000) {
-                        state = HANG_SPECIMEN_STATE.LOWERING_SLIDE_TO_START;
-                    }
+                    Actions.runBlocking(
+                            new SequentialAction(
+                                    claw.openClaw(),
+                                    new SleepAction(1)
+                            )
+                    );
+                    state = HANG_SPECIMEN_STATE.LOWERING_SLIDE_TO_START;
                     return true;
 
                 case LOWERING_SLIDE_TO_START:

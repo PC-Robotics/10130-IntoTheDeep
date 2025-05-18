@@ -1,6 +1,6 @@
 package org.firstinspires.ftc.teamcode.subsystems;
 
-import static org.firstinspires.ftc.teamcode.HardwareUtility.motorInit;
+import static org.firstinspires.ftc.teamcode.util.HardwareUtility.motorInit;
 import static org.firstinspires.ftc.teamcode.Utility.normalizePowers;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
