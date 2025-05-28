@@ -18,7 +18,7 @@ public class ServoPositionLocator extends LinearOpMode {
     // NOTE - USER EDITABLE VARIABLES
 
     // Change this to the name of the servo on the hardware map
-    static final String SERVO_NAME = "bucket";
+    static final String SERVO_NAME = "wrist";
 
     // INCREMENTS - Calculated as a percentage of the servo's total range
     // On a 5-turn servo, 0.01 will move the servo more than on a 1-turn servo
@@ -63,7 +63,7 @@ public class ServoPositionLocator extends LinearOpMode {
         // Can move to an FTC Dashboard Config constants file to be able to change there
         Servo servo = hardwareMap.get(Servo.class, SERVO_NAME);
 
-        servo.setDirection(Servo.Direction.REVERSE);
+        servo.setDirection(Servo.Direction.FORWARD);
 
         telemetry.addData(">", "Press Start to test " + SERVO_NAME);
         telemetry.addData(">", "Use x and b to make small adjustments");

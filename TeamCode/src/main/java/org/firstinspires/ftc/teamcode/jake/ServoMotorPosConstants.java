@@ -17,12 +17,12 @@ public class ServoMotorPosConstants
     public static final int LINEAR_SLIDE_SPECIMEN_WALL_POSITION = 10;
     public static final int LINEAR_SLIDE_TOUCHING_POSITION = 2400;
 
-    public static final double CLAW_OPEN_POSITION = .5;
-    public static final double CLAW_CLOSED_POSITION = .69;
+    public static final double CLAW_OPEN_POSITION = .3;
+    public static final double CLAW_CLOSED_POSITION = .9;
 
-    public static final double WRIST_INTAKE_POSITION = 0.70;
-    public static final double WRIST_RELEASE_POSITION = 0.00;
-    public static final double WRIST_DRIVING_POSITION = 0.22;
+    public static final double WRIST_INTAKE_POSITION = 0.79;
+    public static final double WRIST_RELEASE_POSITION = 0.08;
+    public static final double WRIST_DRIVING_POSITION = 0.34;
     public static final double BUCKET_PICKUP_POSITION = 0.514;
     public static final double BUCKET_RELEASE_POSITION = 0.48;
 

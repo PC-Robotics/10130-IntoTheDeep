@@ -107,8 +107,8 @@ public class PIDRobot
         imu = myOpMode.hardwareMap.get(IMU.class,"imu");
 
         // Initialize the odometry wheels
-        driveEncoder = myOpMode.hardwareMap.get(DcMotor.class,"drive");
-        strafeEncoder = myOpMode.hardwareMap.get(DcMotor.class,"strafe");
+        driveEncoder = myOpMode.hardwareMap.get(DcMotor.class,"par");
+        strafeEncoder = myOpMode.hardwareMap.get(DcMotor.class,"perp");
 
         /*
          * Copied from another source (Simpflied Odometry by gearsincorg)
